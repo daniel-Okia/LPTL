@@ -30,12 +30,19 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <div className="bg-gradient-to-r from-purple-500 to-green-500 p-2 rounded-lg">
-              <Trophy className="h-6 w-6 text-white" />
+            <img 
+              src="/LPTL Transparent Logo.png" 
+              alt="LPTL Logo" 
+              className="h-10 w-auto"
+            />
+            <div className="flex flex-col">
+              <span className={`text-lg font-bold bg-gradient-to-r from-purple-500 to-green-500 bg-clip-text text-transparent`}>
+                LPTL
+              </span>
+              <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Leisure Park Turf League
+              </span>
             </div>
-            <span className={`text-xl font-bold bg-gradient-to-r from-purple-500 to-green-500 bg-clip-text text-transparent`}>
-              LPTL
-            </span>
           </div>
 
           {/* Desktop Navigation */}
