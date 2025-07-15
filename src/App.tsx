@@ -8,6 +8,8 @@ import Fixtures from './pages/Fixtures';
 import Standings from './pages/Standings';
 import Transfers from './pages/Transfers';
 import Admin from './pages/Admin';
+import SignIn from './pages/SignIn';
+import Register from './pages/Register';
 import PlayerProfile from './pages/PlayerProfile';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { DataProvider } from './contexts/DataContext';
@@ -27,6 +29,8 @@ function App() {
               <Route path="/standings" element={<Standings />} />
               <Route path="/transfers" element={<Transfers />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/register" element={<Register />} />
               <Route path="/player/:id" element={<PlayerProfile />} />
             </Routes>
           </div>
