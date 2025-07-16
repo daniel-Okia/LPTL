@@ -3,19 +3,23 @@ import {
   teamsService, 
   playersService, 
   matchesService, 
-  transfersService 
+  transfersService,
+  usersService
 } from '../services/firestore';
-import { Team, Player, Match, Transfer } from '../types';
+import { Team, Player, Match, Transfer, User } from '../types';
+import { ROLES, getRolePermissions } from '../utils/permissions';
 
 interface DataContextType {
   teams: Team[];
   players: Player[];
   matches: Match[];
   transfers: Transfer[];
+  users: User[];
   loading: boolean;
   error: string | null;
   updateMatch: (matchId: string, homeScore: number, awayScore: number, status: string) => Promise<void>;
   transferPlayer: (playerId: string, newTeamId: string) => Promise<void>;
+  createSuperAdmin: (email: string, firstName: string, lastName: string) => Promise<void>;
   refreshData: () => Promise<void>;
 }
 
@@ -34,6 +38,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [players, setPlayers] = useState<Player[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [transfers, setTransfers] = useState<Transfer[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,17 +48,19 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       setError(null);
 
-      const [teamsData, playersData, matchesData, transfersData] = await Promise.all([
+      const [teamsData, playersData, matchesData, transfersData, usersData] = await Promise.all([
         teamsService.getAll(),
         playersService.getAll(),
         matchesService.getAll(),
-        transfersService.getAll()
+        transfersService.getAll(),
+        usersService.getAll()
       ]);
 
       setTeams(teamsData);
       setPlayers(playersData);
       setMatches(matchesData);
       setTransfers(transfersData);
+      setUsers(usersData);
     } catch (err) {
       console.error('Error loading data:', err);
       setError('Failed to load data. Please try again.');
@@ -68,6 +75,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsubscribePlayers = playersService.subscribe(setPlayers);
     const unsubscribeMatches = matchesService.subscribe(setMatches);
     const unsubscribeTransfers = transfersService.subscribe(setTransfers);
+    const unsubscribeUsers = usersService.subscribe(setUsers);
 
     // Load initial data
     loadData();
@@ -78,6 +86,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       unsubscribePlayers();
       unsubscribeMatches();
       unsubscribeTransfers();
+      unsubscribeUsers();
     };
   }, []);
 
@@ -171,6 +180,23 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const createSuperAdmin = async (email: string, firstName: string, lastName: string) => {
+    try {
+      const permissions = getRolePermissions(ROLES.SUPER_ADMIN);
+      await usersService.create({
+        email,
+        firstName,
+        lastName,
+        role: ROLES.SUPER_ADMIN,
+        permissions,
+        status: 'active'
+      });
+    } catch (err) {
+      console.error('Error creating super admin:', err);
+      setError('Failed to create super admin. Please try again.');
+    }
+  };
+
   const refreshData = async () => {
     await loadData();
   };
@@ -181,10 +207,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       players,
       matches,
       transfers,
+      users,
       loading,
       error,
       updateMatch,
       transferPlayer,
+      createSuperAdmin,
       refreshData
     }}>
       {children}
