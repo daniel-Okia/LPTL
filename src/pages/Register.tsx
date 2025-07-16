@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, User, Phone, UserPlus, ArrowLeft, Flag } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useData } from '../contexts/DataContext';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Register: React.FC = () => {
   const { darkMode } = useTheme();
+  const { signUp } = useAuth();
+  const { teams } = useData();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -12,11 +18,13 @@ const Register: React.FC = () => {
     phone: '',
     password: '',
     confirmPassword: '',
-    favoriteTeam: '',
+    favoriteTeamId: '',
     agreeToTerms: false
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -26,22 +34,37 @@ const Register: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle registration logic here
-    console.log('Register:', formData);
-  };
+    setLoading(true);
+    setError('');
 
-  const teams = [
-    { id: '1', name: 'Thunder Bolts', logo: '⚡' },
-    { id: '2', name: 'Green Eagles', logo: '🦅' },
-    { id: '3', name: 'Purple Panthers', logo: '🐆' },
-    { id: '4', name: 'Fire Dragons', logo: '🐉' },
-    { id: '5', name: 'Golden Lions', logo: '🦁' },
-    { id: '6', name: 'Silver Sharks', logo: '🦈' },
-    { id: '7', name: 'Blue Wolves', logo: '🐺' },
-    { id: '8', name: 'Black Tigers', logo: '🐅' }
-  ];
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await signUp(formData.email, formData.password, {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+        favoriteTeamId: formData.favoriteTeamId || undefined
+      });
+      navigate('/');
+    } catch (err: any) {
+      setError(err.message || 'Failed to create account. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={`min-h-screen ${darkMode ? 'text-white' : 'text-gray-900'} pt-8 pb-12`}>
@@ -74,6 +97,12 @@ const Register: React.FC = () => {
 
         {/* Registration Form */}
         <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl shadow-lg p-8`}>
+          {error && (
+            <div className="mb-6 p-4 bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg">
+              <p className="text-red-700 dark:text-red-400 text-sm">{error}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -88,11 +117,12 @@ const Register: React.FC = () => {
                     onChange={handleInputChange}
                     placeholder="Enter your first name"
                     required
+                    disabled={loading}
                     className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-colors duration-200 ${
                       darkMode
                         ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:border-purple-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
-                    } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
+                    } focus:outline-none focus:ring-2 focus:ring-purple-500/20 disabled:opacity-50`}
                   />
                 </div>
               </div>
@@ -108,11 +138,12 @@ const Register: React.FC = () => {
                     onChange={handleInputChange}
                     placeholder="Enter your last name"
                     required
+                    disabled={loading}
                     className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-colors duration-200 ${
                       darkMode
                         ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:border-purple-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
-                    } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
+                    } focus:outline-none focus:ring-2 focus:ring-purple-500/20 disabled:opacity-50`}
                   />
                 </div>
               </div>
@@ -130,11 +161,12 @@ const Register: React.FC = () => {
                   onChange={handleInputChange}
                   placeholder="Enter your email"
                   required
+                  disabled={loading}
                   className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-colors duration-200 ${
                     darkMode
                       ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:border-purple-500'
                       : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
-                  } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
+                  } focus:outline-none focus:ring-2 focus:ring-purple-500/20 disabled:opacity-50`}
                 />
               </div>
             </div>
@@ -150,11 +182,12 @@ const Register: React.FC = () => {
                   value={formData.phone}
                   onChange={handleInputChange}
                   placeholder="Enter your phone number"
+                  disabled={loading}
                   className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-colors duration-200 ${
                     darkMode
                       ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:border-purple-500'
                       : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
-                  } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
+                  } focus:outline-none focus:ring-2 focus:ring-purple-500/20 disabled:opacity-50`}
                 />
               </div>
             </div>
@@ -165,14 +198,15 @@ const Register: React.FC = () => {
               <div className="relative">
                 <Flag className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <select
-                  name="favoriteTeam"
-                  value={formData.favoriteTeam}
+                  name="favoriteTeamId"
+                  value={formData.favoriteTeamId}
                   onChange={handleInputChange}
+                  disabled={loading}
                   className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-colors duration-200 ${
                     darkMode
                       ? 'bg-slate-700 border-slate-600 text-white focus:border-purple-500'
                       : 'bg-white border-gray-300 text-gray-900 focus:border-purple-500'
-                  } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
+                  } focus:outline-none focus:ring-2 focus:ring-purple-500/20 disabled:opacity-50`}
                 >
                   <option value="">Select your favorite team</option>
                   {teams.map(team => (
@@ -197,16 +231,18 @@ const Register: React.FC = () => {
                     onChange={handleInputChange}
                     placeholder="Create a password"
                     required
+                    disabled={loading}
                     className={`w-full pl-10 pr-12 py-3 rounded-lg border transition-colors duration-200 ${
                       darkMode
                         ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:border-purple-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
-                    } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
+                    } focus:outline-none focus:ring-2 focus:ring-purple-500/20 disabled:opacity-50`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                    disabled={loading}
+                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors duration-200 disabled:opacity-50"
                   >
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
@@ -224,16 +260,18 @@ const Register: React.FC = () => {
                     onChange={handleInputChange}
                     placeholder="Confirm your password"
                     required
+                    disabled={loading}
                     className={`w-full pl-10 pr-12 py-3 rounded-lg border transition-colors duration-200 ${
                       darkMode
                         ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:border-purple-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
-                    } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
+                    } focus:outline-none focus:ring-2 focus:ring-purple-500/20 disabled:opacity-50`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                    disabled={loading}
+                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors duration-200 disabled:opacity-50"
                   >
                     {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
@@ -249,20 +287,23 @@ const Register: React.FC = () => {
                 checked={formData.agreeToTerms}
                 onChange={handleInputChange}
                 required
-                className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2 mt-1"
+                disabled={loading}
+                className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2 mt-1 disabled:opacity-50"
               />
               <label className="text-sm">
                 I agree to the{' '}
                 <button
                   type="button"
-                  className="text-purple-500 hover:text-purple-600 transition-colors duration-200"
+                  disabled={loading}
+                  className="text-purple-500 hover:text-purple-600 transition-colors duration-200 disabled:opacity-50"
                 >
                   Terms of Service
                 </button>{' '}
                 and{' '}
                 <button
                   type="button"
-                  className="text-purple-500 hover:text-purple-600 transition-colors duration-200"
+                  disabled={loading}
+                  className="text-purple-500 hover:text-purple-600 transition-colors duration-200 disabled:opacity-50"
                 >
                   Privacy Policy
                 </button>
@@ -272,15 +313,21 @@ const Register: React.FC = () => {
             {/* Register Button */}
             <button
               type="submit"
-              disabled={!formData.agreeToTerms}
+              disabled={!formData.agreeToTerms || loading}
               className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 ${
-                formData.agreeToTerms
+                formData.agreeToTerms && !loading
                   ? 'bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white'
-                  : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                  : 'bg-gray-400 text-gray-600 cursor-not-allowed transform-none'
               }`}
             >
-              <UserPlus className="h-5 w-5" />
-              <span>Create Account</span>
+              {loading ? (
+                <LoadingSpinner size="sm" />
+              ) : (
+                <>
+                  <UserPlus className="h-5 w-5" />
+                  <span>Create Account</span>
+                </>
+              )}
             </button>
           </form>
 

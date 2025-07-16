@@ -2,19 +2,22 @@ import React, { useState } from 'react';
 import { Settings, Users, Calendar, Trophy, Plus, Edit, Trash2, Save } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useData } from '../contexts/DataContext';
+import { useAuth } from '../contexts/AuthContext';
+import { PERMISSIONS } from '../utils/permissions';
 
 const Admin: React.FC = () => {
   const { darkMode } = useTheme();
+  const { hasPermission } = useAuth();
   const { teams, players, matches, updateMatch } = useData();
   const [activeTab, setActiveTab] = useState('overview');
   const [editingMatch, setEditingMatch] = useState<string | null>(null);
 
   const tabs = [
     { id: 'overview', name: 'Overview', icon: Trophy },
-    { id: 'teams', name: 'Teams', icon: Users },
-    { id: 'matches', name: 'Matches', icon: Calendar },
-    { id: 'settings', name: 'Settings', icon: Settings },
-  ];
+    { id: 'teams', name: 'Teams', icon: Users, permission: PERMISSIONS.VIEW_TEAMS },
+    { id: 'matches', name: 'Matches', icon: Calendar, permission: PERMISSIONS.VIEW_MATCHES },
+    { id: 'settings', name: 'Settings', icon: Settings, permission: PERMISSIONS.MANAGE_LEAGUE_SETTINGS },
+  ].filter(tab => !tab.permission || hasPermission(tab.permission));
 
   const OverviewTab = () => (
     <div className="space-y-6">

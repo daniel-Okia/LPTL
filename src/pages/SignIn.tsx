@@ -1,19 +1,34 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, LogIn, ArrowLeft } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const SignIn: React.FC = () => {
   const { darkMode } = useTheme();
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle sign in logic here
-    console.log('Sign in:', { email, password, rememberMe });
+    setLoading(true);
+    setError('');
+
+    try {
+      await signIn(email, password);
+      navigate('/');
+    } catch (err: any) {
+      setError(err.message || 'Failed to sign in. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,6 +62,12 @@ const SignIn: React.FC = () => {
 
         {/* Sign In Form */}
         <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl shadow-lg p-8`}>
+          {error && (
+            <div className="mb-6 p-4 bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg">
+              <p className="text-red-700 dark:text-red-400 text-sm">{error}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Field */}
             <div>
@@ -59,11 +80,12 @@ const SignIn: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   required
+                  disabled={loading}
                   className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-colors duration-200 ${
                     darkMode
                       ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:border-purple-500'
                       : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
-                  } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
+                  } focus:outline-none focus:ring-2 focus:ring-purple-500/20 disabled:opacity-50`}
                 />
               </div>
             </div>
@@ -79,16 +101,18 @@ const SignIn: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   required
+                  disabled={loading}
                   className={`w-full pl-10 pr-12 py-3 rounded-lg border transition-colors duration-200 ${
                     darkMode
                       ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:border-purple-500'
                       : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
-                  } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
+                  } focus:outline-none focus:ring-2 focus:ring-purple-500/20 disabled:opacity-50`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                  disabled={loading}
+                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors duration-200 disabled:opacity-50"
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -102,13 +126,15 @@ const SignIn: React.FC = () => {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2"
+                  disabled={loading}
+                  className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2 disabled:opacity-50"
                 />
                 <span className="text-sm">Remember me</span>
               </label>
               <button
                 type="button"
-                className="text-sm text-purple-500 hover:text-purple-600 transition-colors duration-200"
+                disabled={loading}
+                className="text-sm text-purple-500 hover:text-purple-600 transition-colors duration-200 disabled:opacity-50"
               >
                 Forgot password?
               </button>
@@ -117,10 +143,17 @@ const SignIn: React.FC = () => {
             {/* Sign In Button */}
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              <LogIn className="h-5 w-5" />
-              <span>Sign In</span>
+              {loading ? (
+                <LoadingSpinner size="sm" />
+              ) : (
+                <>
+                  <LogIn className="h-5 w-5" />
+                  <span>Sign In</span>
+                </>
+              )}
             </button>
           </form>
 

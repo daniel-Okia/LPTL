@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Trophy, Users, Calendar, BarChart3, ArrowRightLeft, Settings, Moon, Sun } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
+import { PERMISSIONS } from '../utils/permissions';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { darkMode, toggleDarkMode } = useTheme();
+  const { userProfile, hasPermission } = useAuth();
 
   const navItems = [
     { name: 'Home', path: '/', icon: Trophy },
@@ -15,7 +18,26 @@ const Navbar: React.FC = () => {
     { name: 'Fixtures', path: '/fixtures', icon: Calendar },
     { name: 'Standings', path: '/standings', icon: BarChart3 },
     { name: 'Transfers', path: '/transfers', icon: ArrowRightLeft },
-  ];
+  ].filter(item => {
+    // Basic pages are available to everyone
+    if (['/', '/teams', '/players', '/fixtures', '/standings'].includes(item.path)) {
+      return true;
+    }
+    // Transfers page requires transfer permission
+    if (item.path === '/transfers') {
+      return hasPermission(PERMISSIONS.TRANSFER_PLAYERS);
+    }
+    return true;
+  });
+
+  // Admin navigation items
+  const adminNavItems = [];
+  if (hasPermission(PERMISSIONS.MANAGE_LIVE_MATCHES) || hasPermission(PERMISSIONS.SYSTEM_ADMIN)) {
+    adminNavItems.push({ name: 'Admin', path: '/admin', icon: Settings });
+  }
+  if (hasPermission(PERMISSIONS.MANAGE_USERS)) {
+    adminNavItems.push({ name: 'Users', path: '/users', icon: Users });
+  }
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -58,6 +80,27 @@ const Navbar: React.FC = () => {
                       : darkMode
                       ? 'text-gray-300 hover:text-white hover:bg-purple-800/50'
                       : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="text-sm font-medium">{item.name}</span>
+                </Link>
+              );
+            })}
+            
+            {/* Admin Navigation */}
+            {adminNavItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 ${
+                    isActive(item.path)
+                      ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg transform scale-105'
+                      : darkMode
+                      ? 'text-gray-300 hover:text-white hover:bg-red-800/50'
+                      : 'text-gray-700 hover:text-red-600 hover:bg-red-50'
                   }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -124,6 +167,28 @@ const Navbar: React.FC = () => {
                       : darkMode
                       ? 'text-gray-300 hover:text-white hover:bg-purple-800/50'
                       : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="text-sm font-medium">{item.name}</span>
+                </Link>
+              );
+            })}
+            
+            {/* Admin Navigation Mobile */}
+            {adminNavItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  onClick={() => setIsOpen(false)}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 ${
+                    isActive(item.path)
+                      ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg'
+                      : darkMode
+                      ? 'text-gray-300 hover:text-white hover:bg-red-800/50'
+                      : 'text-gray-700 hover:text-red-600 hover:bg-red-50'
                   }`}
                 >
                   <Icon className="h-4 w-4" />
