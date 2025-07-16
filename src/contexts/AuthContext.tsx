@@ -8,15 +8,20 @@ import {
   sendPasswordResetEmail
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import { usersService } from '../services/firestore';
+import { usersService, invitationsService } from '../services/firestore';
 import { User } from '../types';
+import { ROLES, getRolePermissions } from '../utils/permissions';
 
 interface AuthContextType {
   currentUser: FirebaseUser | null;
   userProfile: User | null;
   loading: boolean;
+  hasPermission: (permission: string) => boolean;
+  hasAnyPermission: (permissions: string[]) => boolean;
+  isRole: (role: string) => boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, userData: Partial<User>) => Promise<void>;
+  signUpWithInvitation: (email: string, password: string, userData: Partial<User>, invitationId: string) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
 }
@@ -65,16 +70,56 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string, userData: Partial<User>) => {
     const { user } = await createUserWithEmailAndPassword(auth, email, password);
     
+    // Check if there's a pending invitation
+    const invitation = await invitationsService.getByEmail(email);
+    const role = invitation ? invitation.role : ROLES.MEMBER;
+    const permissions = getRolePermissions(role);
+    
     // Create user profile in Firestore
-    await usersService.create({
-      id: user.uid,
+    await usersService.createWithId(user.uid, {
       email: user.email!,
       firstName: userData.firstName || '',
       lastName: userData.lastName || '',
       phone: userData.phone,
       favoriteTeamId: userData.favoriteTeamId,
-      role: 'user'
+      role,
+      permissions,
+      status: 'active',
+      assignedBy: invitation?.invitedBy
     });
+    
+    // Mark invitation as accepted if it exists
+    if (invitation) {
+      await invitationsService.updateStatus(invitation.id, 'accepted');
+    }
+  };
+
+  const signUpWithInvitation = async (email: string, password: string, userData: Partial<User>, invitationId: string) => {
+    const { user } = await createUserWithEmailAndPassword(auth, email, password);
+    
+    // Get invitation details
+    const invitation = await invitationsService.getByEmail(email);
+    if (!invitation) {
+      throw new Error('Invalid invitation');
+    }
+    
+    const permissions = getRolePermissions(invitation.role);
+    
+    // Create user profile in Firestore
+    await usersService.createWithId(user.uid, {
+      email: user.email!,
+      firstName: userData.firstName || '',
+      lastName: userData.lastName || '',
+      phone: userData.phone,
+      favoriteTeamId: userData.favoriteTeamId,
+      role: invitation.role,
+      permissions,
+      status: 'active',
+      assignedBy: invitation.invitedBy
+    });
+    
+    // Mark invitation as accepted
+    await invitationsService.updateStatus(invitation.id, 'accepted');
   };
 
   const logout = async () => {
@@ -85,12 +130,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await sendPasswordResetEmail(auth, email);
   };
 
+  // Permission checking functions
+  const hasPermission = (permission: string): boolean => {
+    if (!userProfile) return false;
+    return userProfile.permissions?.includes(permission) || 
+           userProfile.permissions?.includes('system:admin') || 
+           false;
+  };
+
+  const hasAnyPermission = (permissions: string[]): boolean => {
+    if (!userProfile) return false;
+    return permissions.some(permission => hasPermission(permission));
+  };
+
+  const isRole = (role: string): boolean => {
+    return userProfile?.role === role;
+  };
+
   const value = {
     currentUser,
     userProfile,
     loading,
+    hasPermission,
+    hasAnyPermission,
+    isRole,
     signIn,
     signUp,
+    signUpWithInvitation,
     logout,
     resetPassword
   };

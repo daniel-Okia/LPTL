@@ -14,7 +14,7 @@ import {
   writeBatch
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import { Team, Player, Match, Transfer, User } from '../types';
+import { Team, Player, Match, Transfer, User, UserInvitation } from '../types';
 
 // Collections
 const TEAMS_COLLECTION = 'teams';
@@ -22,6 +22,7 @@ const PLAYERS_COLLECTION = 'players';
 const MATCHES_COLLECTION = 'matches';
 const TRANSFERS_COLLECTION = 'transfers';
 const USERS_COLLECTION = 'users';
+const INVITATIONS_COLLECTION = 'invitations';
 
 // Helper function to convert Firestore timestamp to Date
 const convertTimestamp = (timestamp: any): Date => {
@@ -323,6 +324,29 @@ export const transfersService = {
 
 // Users Service
 export const usersService = {
+  // Get all users (admin only)
+  async getAll(): Promise<User[]> {
+    const querySnapshot = await getDocs(collection(db, USERS_COLLECTION));
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: convertTimestamp(doc.data().createdAt),
+      updatedAt: convertTimestamp(doc.data().updatedAt)
+    })) as User[];
+  },
+
+  // Get users by role
+  async getByRole(role: string): Promise<User[]> {
+    const q = query(collection(db, USERS_COLLECTION), where('role', '==', role));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: convertTimestamp(doc.data().createdAt),
+      updatedAt: convertTimestamp(doc.data().updatedAt)
+    })) as User[];
+  },
+
   // Get user by ID
   async getById(id: string): Promise<User | null> {
     const docRef = doc(db, USERS_COLLECTION, id);
@@ -350,12 +374,128 @@ export const usersService = {
     return docRef.id;
   },
 
+  // Create user with specific ID (for auth integration)
+  async createWithId(id: string, user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> {
+    const now = Timestamp.now();
+    const docRef = doc(db, USERS_COLLECTION, id);
+    await updateDoc(docRef, {
+      ...user,
+      createdAt: now,
+      updatedAt: now
+    });
+  },
+
   // Update user
   async update(id: string, updates: Partial<Omit<User, 'id' | 'createdAt'>>): Promise<void> {
     const docRef = doc(db, USERS_COLLECTION, id);
     await updateDoc(docRef, {
       ...updates,
       updatedAt: Timestamp.now()
+    });
+  },
+
+  // Update user role and permissions
+  async updateRole(id: string, role: string, permissions: string[], assignedBy: string): Promise<void> {
+    const docRef = doc(db, USERS_COLLECTION, id);
+    await updateDoc(docRef, {
+      role,
+      permissions,
+      assignedBy,
+      updatedAt: Timestamp.now()
+    });
+  },
+
+  // Suspend/activate user
+  async updateStatus(id: string, status: 'active' | 'suspended'): Promise<void> {
+    const docRef = doc(db, USERS_COLLECTION, id);
+    await updateDoc(docRef, {
+      status,
+      updatedAt: Timestamp.now()
+    });
+  },
+
+  // Subscribe to users changes
+  subscribe(callback: (users: User[]) => void) {
+    return onSnapshot(collection(db, USERS_COLLECTION), (snapshot) => {
+      const users = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: convertTimestamp(doc.data().createdAt),
+        updatedAt: convertTimestamp(doc.data().updatedAt)
+      })) as User[];
+      callback(users);
+    });
+  }
+};
+
+// Invitations Service
+export const invitationsService = {
+  // Get all invitations
+  async getAll(): Promise<UserInvitation[]> {
+    const q = query(collection(db, INVITATIONS_COLLECTION), orderBy('createdAt', 'desc'));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      expiresAt: convertTimestamp(doc.data().expiresAt),
+      createdAt: convertTimestamp(doc.data().createdAt)
+    })) as UserInvitation[];
+  },
+
+  // Get invitation by email
+  async getByEmail(email: string): Promise<UserInvitation | null> {
+    const q = query(
+      collection(db, INVITATIONS_COLLECTION), 
+      where('email', '==', email),
+      where('status', '==', 'pending')
+    );
+    const querySnapshot = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
+      const doc = querySnapshot.docs[0];
+      return {
+        id: doc.id,
+        ...doc.data(),
+        expiresAt: convertTimestamp(doc.data().expiresAt),
+        createdAt: convertTimestamp(doc.data().createdAt)
+      } as UserInvitation;
+    }
+    return null;
+  },
+
+  // Create invitation
+  async create(invitation: Omit<UserInvitation, 'id' | 'createdAt'>): Promise<string> {
+    const docRef = await addDoc(collection(db, INVITATIONS_COLLECTION), {
+      ...invitation,
+      expiresAt: Timestamp.fromDate(invitation.expiresAt),
+      createdAt: Timestamp.now()
+    });
+    return docRef.id;
+  },
+
+  // Update invitation status
+  async updateStatus(id: string, status: 'accepted' | 'expired'): Promise<void> {
+    const docRef = doc(db, INVITATIONS_COLLECTION, id);
+    await updateDoc(docRef, { status });
+  },
+
+  // Delete invitation
+  async delete(id: string): Promise<void> {
+    const docRef = doc(db, INVITATIONS_COLLECTION, id);
+    await deleteDoc(docRef);
+  },
+
+  // Subscribe to invitations changes
+  subscribe(callback: (invitations: UserInvitation[]) => void) {
+    const q = query(collection(db, INVITATIONS_COLLECTION), orderBy('createdAt', 'desc'));
+    return onSnapshot(q, (snapshot) => {
+      const invitations = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        expiresAt: convertTimestamp(doc.data().expiresAt),
+        createdAt: convertTimestamp(doc.data().createdAt)
+      })) as UserInvitation[];
+      callback(invitations);
     });
   }
 };

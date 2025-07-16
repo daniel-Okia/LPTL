@@ -12,10 +12,13 @@ import Transfers from './pages/Transfers';
 import Admin from './pages/Admin';
 import SignIn from './pages/SignIn';
 import Register from './pages/Register';
+import UserManagement from './pages/UserManagement';
 import PlayerProfile from './pages/PlayerProfile';
+import ProtectedRoute from './components/ProtectedRoute';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { DataProvider, useData } from './contexts/DataContext';
+import { PERMISSIONS, ROLES } from './utils/permissions';
 
 const AppContent: React.FC = () => {
   const { loading, error, refreshData } = useData();
@@ -47,8 +50,21 @@ const AppContent: React.FC = () => {
         <Route path="/players" element={<Players />} />
         <Route path="/fixtures" element={<Fixtures />} />
         <Route path="/standings" element={<Standings />} />
-        <Route path="/transfers" element={<Transfers />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/transfers" element={
+          <ProtectedRoute requiredPermission={PERMISSIONS.TRANSFER_PLAYERS}>
+            <Transfers />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin" element={
+          <ProtectedRoute requiredPermissions={[PERMISSIONS.MANAGE_LIVE_MATCHES, PERMISSIONS.SYSTEM_ADMIN]}>
+            <Admin />
+          </ProtectedRoute>
+        } />
+        <Route path="/users" element={
+          <ProtectedRoute requiredPermission={PERMISSIONS.MANAGE_USERS}>
+            <UserManagement />
+          </ProtectedRoute>
+        } />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
         <Route path="/player/:id" element={<PlayerProfile />} />

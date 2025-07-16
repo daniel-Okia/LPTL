@@ -66,7 +66,34 @@ export interface User {
   lastName: string;
   phone?: string;
   favoriteTeamId?: string;
-  role: 'user' | 'admin';
+  role: 'member' | 'organizer' | 'admin' | 'super_admin';
+  permissions: UserPermission[];
+  status: 'active' | 'suspended' | 'pending';
+  assignedBy?: string; // ID of user who assigned this role
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface UserPermission {
+  resource: string;
+  actions: string[];
+}
+
+export interface RoleDefinition {
+  name: string;
+  displayName: string;
+  description: string;
+  permissions: UserPermission[];
+  canAssignRoles?: string[];
+}
+
+export interface UserInvitation {
+  id: string;
+  email: string;
+  role: 'organizer' | 'admin';
+  invitedBy: string;
+  invitedByName: string;
+  status: 'pending' | 'accepted' | 'expired';
+  expiresAt: Date;
+  createdAt: Date;
 }
