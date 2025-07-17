@@ -113,170 +113,36 @@ const Home: React.FC = () => {
         </div>
       )}
 
-      {/* Contact Form Section */}
+      {/* Quick Stats */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl shadow-lg p-8`}>
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-              <div className="flex justify-center mb-6">
-                <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-4 rounded-full">
-                  <Mail className="h-8 w-8 text-white" />
-                </div>
-              </div>
-              <h2 className="text-3xl font-bold mb-4">Get In Touch</h2>
-              <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'} mb-2`}>
-                Interested in learning more about LPTL? Looking to partner with us or support our league?
-              </p>
-              <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                We'd love to hear from you!
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Contact Form */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold mb-2">League Overview</h2>
+          <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            Current season statistics and highlights
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105`}>
+            <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-xl font-bold mb-4">Send us a message</h3>
-                <form className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Name</label>
-                    <input
-                      type="text"
-                      placeholder="Your full name"
-                      className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 ${
-                        darkMode
-                          ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:border-purple-500'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
-                      } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Email</label>
-                    <input
-                      type="email"
-                      placeholder="your.email@example.com"
-                      className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 ${
-                        darkMode
-                          ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:border-purple-500'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
-                      } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Subject</label>
-                    <select
-                      className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 ${
-                        darkMode
-                          ? 'bg-slate-700 border-slate-600 text-white focus:border-purple-500'
-                          : 'bg-white border-gray-300 text-gray-900 focus:border-purple-500'
-                      } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
-                    >
-                      <option value="">Select a topic</option>
-                      <option value="general">General Inquiry</option>
-                      <option value="partnership">Partnership Opportunity</option>
-                      <option value="sponsorship">Sponsorship & Donations</option>
-                      <option value="media">Media & Press</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Message</label>
-                    <textarea
-                      rows={4}
-                      placeholder="Tell us more about your inquiry..."
-                      className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 resize-none ${
-                        darkMode
-                          ? 'bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:border-purple-500'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
-                      } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
-                    ></textarea>
-                  </div>
-                  
-                  <button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
-                  >
-                    <Mail className="h-5 w-5" />
-                    <span>Send Message</span>
-                  </button>
-                </form>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Teams</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
+                  {teams.length}
+                </p>
               </div>
-              
-              {/* Contact Information */}
-              <div>
-                <h3 className="text-xl font-bold mb-4">Contact Information</h3>
-                <div className="space-y-6">
-                  <div className={`${darkMode ? 'bg-slate-700' : 'bg-gray-50'} rounded-lg p-6`}>
-                    <div className="flex items-center space-x-3 mb-3">
-                      <Mail className="h-6 w-6 text-purple-500" />
-                      <h4 className="font-semibold">Email Us</h4>
-                    </div>
-                    <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'} mb-2`}>
-                      For all inquiries, partnerships, and donations:
-                    </p>
-                    <a
-                      href="mailto:leisureparkturfleague@gmail.com"
-                      className="text-purple-500 hover:text-purple-600 font-semibold transition-colors duration-200"
-                    >
-                      leisureparkturfleague@gmail.com
-                    </a>
-                  </div>
-                  
-                  <div className={`${darkMode ? 'bg-slate-700' : 'bg-gray-50'} rounded-lg p-6`}>
-                    <div className="flex items-center space-x-3 mb-3">
-                      <Users className="h-6 w-6 text-green-500" />
-                      <h4 className="font-semibold">Partnership Opportunities</h4>
-                    </div>
-                    <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Interested in sponsoring teams, events, or becoming an official partner? 
-                      We welcome collaborations that help grow our community.
-                    </p>
-                  </div>
-                  
-                  <div className={`${darkMode ? 'bg-slate-700' : 'bg-gray-50'} rounded-lg p-6`}>
-                    <div className="flex items-center space-x-3 mb-3">
-                      <Trophy className="h-6 w-6 text-yellow-500" />
-                      <h4 className="font-semibold">Support Our League</h4>
-                    </div>
-                    <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Help us maintain quality facilities, equipment, and organize better 
-                      tournaments for our community. Every contribution makes a difference.
-                    </p>
-                  </div>
-                  
-                  {!currentUser && (
-                    <div className={`${darkMode ? 'bg-slate-700' : 'bg-gray-50'} rounded-lg p-6`}>
-                      <div className="flex items-center space-x-3 mb-3">
-                        <User className="h-6 w-6 text-blue-500" />
-                        <h4 className="font-semibold">Join Our Community</h4>
-                      </div>
-                      <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'} mb-4`}>
-                        Want to stay updated with league news and match results?
-                      </p>
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <Link
-                          to="/signin"
-                          className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 text-center text-sm"
-                        >
-                          Sign In
-                        </Link>
-                        <Link
-                          to="/register"
-                          className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 text-center text-sm"
-                        >
-                          Register
-                        </Link>
-                      </div>
-                    </div>
-                  )}
-                </div>
+              <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-3 rounded-lg">
+                <Users className="h-6 w-6 text-white" />
               </div>
             </div>
           </div>
-        </div>
-      @@
+          
+          <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Players</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-green-500 to-teal-500 bg-clip-text text-transparent">
+                  {players.length}
+                </p>
               </div>
               <div className="bg-gradient-to-r from-green-500 to-teal-500 p-3 rounded-lg">
                 <Star className="h-6 w-6 text-white" />
