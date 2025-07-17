@@ -276,44 +276,6 @@ const Home: React.FC = () => {
             </div>
           </div>
         </div>
-      @@
-              </div>
-              <div className="bg-gradient-to-r from-green-500 to-teal-500 p-3 rounded-lg">
-                <Star className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </div>
-          
-          <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Matches Played</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-                  {matches.filter(m => m.status === 'finished').length}
-                </p>
-              </div>
-              <div className="bg-gradient-to-r from-orange-500 to-red-500 p-3 rounded-lg">
-                <Calendar className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </div>
-          
-          <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Goals</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
-                  {teams.reduce((sum, team) => sum + team.goalsFor, 0)}
-                </p>
-              </div>
-              <div className="bg-gradient-to-r from-pink-500 to-purple-500 p-3 rounded-lg">
-                <Trophy className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* League Table Preview */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex items-center justify-between mb-6">
