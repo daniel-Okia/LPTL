@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, Users, Calendar, TrendingUp, Play, Star, ArrowRightLeft, Newspaper, LogIn, UserPlus, Clock, MapPin, Target } from 'lucide-react';
+import { Trophy, Users, Calendar, TrendingUp, Play, Star, LogIn, UserPlus, Clock, MapPin, Target } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useData } from '../contexts/DataContext';
 
@@ -12,16 +12,6 @@ const Home: React.FC = () => {
   const upcomingMatches = matches.filter(match => match.status === 'scheduled').slice(0, 3);
   const topScorers = players.sort((a, b) => b.goals - a.goals).slice(0, 5);
   const topTeams = teams.sort((a, b) => b.points - a.points).slice(0, 4);
-  const recentTransfers = [
-    { playerName: 'Marcus Johnson', fromTeam: 'Thunder Bolts', toTeam: 'Green Eagles', value: 85000, date: '2024-01-20' },
-    { playerName: 'Carlos Rodriguez', fromTeam: 'Purple Panthers', toTeam: 'Fire Dragons', value: 88000, date: '2024-01-19' },
-    { playerName: 'James Wilson', fromTeam: 'Golden Lions', toTeam: 'Silver Sharks', value: 65000, date: '2024-01-18' }
-  ];
-  const latestNews = [
-    { title: 'Thunder Bolts Maintain Lead in LPTL', summary: 'Thunder Bolts continue their impressive form with a 2-1 victory over Green Eagles', date: '2024-01-21', category: 'Match Report' },
-    { title: 'New Transfer Window Opens', summary: 'Teams can now make player transfers for the remainder of the season', date: '2024-01-20', category: 'Transfer News' },
-    { title: 'Player of the Month: Marcus Johnson', summary: 'Thunder Bolts striker takes home the award after scoring 5 goals in January', date: '2024-01-19', category: 'Awards' }
-  ];
 
   return (
     <div className={`min-h-screen ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -119,41 +109,6 @@ const Home: React.FC = () => {
         </div>
       )}
 
-      {/* Latest News */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-3">
-            <Newspaper className="h-8 w-8 text-purple-500" />
-            <h2 className="text-3xl font-bold">Latest News</h2>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {latestNews.map((news, index) => (
-            <div key={index} className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105`}>
-              <div className="flex items-center justify-between mb-3">
-                <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
-                  news.category === 'Match Report' ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' :
-                  news.category === 'Transfer News' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400' :
-                  'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400'
-                }`}>
-                  {news.category}
-                </span>
-                <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {new Date(news.date).toLocaleDateString()}
-                </span>
-              </div>
-              <h3 className="font-bold text-lg mb-2">{news.title}</h3>
-              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
-                {news.summary}
-              </p>
-              <button className="text-purple-500 hover:text-purple-600 font-semibold text-sm transition-colors duration-200">
-                Read More →
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Quick Stats */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-8">
@@ -218,55 +173,6 @@ const Home: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Recent Transfers */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-3">
-            <ArrowRightLeft className="h-8 w-8 text-orange-500" />
-            <h2 className="text-3xl font-bold">Recent Transfers</h2>
-          </div>
-          <Link
-            to="/transfers"
-            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
-          >
-            Transfer Market
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recentTransfers.map((transfer, index) => (
-            <div key={index} className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300`}>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-2">
-                  <ArrowRightLeft className="h-5 w-5 text-purple-500" />
-                  <span className="text-sm font-semibold text-purple-500">TRANSFER</span>
-                </div>
-                <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {new Date(transfer.date).toLocaleDateString()}
-                </span>
-              </div>
-              <h3 className="font-bold text-lg mb-2">{transfer.playerName}</h3>
-              <div className="flex items-center justify-between mb-4">
-                <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {transfer.fromTeam}
-                </span>
-                <ArrowRightLeft className="h-4 w-4 text-purple-500" />
-                <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {transfer.toTeam}
-                </span>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold bg-gradient-to-r from-green-500 to-teal-500 bg-clip-text text-transparent">
-                  ${transfer.value.toLocaleString()}
-                </p>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Transfer Fee
-                </p>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
 
