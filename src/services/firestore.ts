@@ -6,6 +6,7 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  setDoc,
   query,
   where,
   orderBy,
@@ -378,7 +379,7 @@ export const usersService = {
   async createWithId(id: string, user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> {
     const now = Timestamp.now();
     const docRef = doc(db, USERS_COLLECTION, id);
-    await updateDoc(docRef, {
+    await setDoc(docRef, {
       ...user,
       createdAt: now,
       updatedAt: now
@@ -503,6 +504,7 @@ export const invitationsService = {
 // Initialize sample data
 export const initializeSampleData = async (): Promise<void> => {
   const batch = writeBatch(db);
+  const now = Timestamp.now();
 
   // Sample teams
   const sampleTeams = [
@@ -612,13 +614,119 @@ export const initializeSampleData = async (): Promise<void> => {
     }
   ];
 
-  const now = Timestamp.now();
+  // Sample players data
+  const samplePlayers = [
+    // Thunder Bolts players
+    {
+      name: 'Marcus Johnson',
+      position: 'Forward',
+      teamId: '', // Will be set after teams are created
+      age: 25,
+      goals: 8,
+      assists: 3,
+      yellowCards: 1,
+      redCards: 0,
+      avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150',
+      value: 25000,
+      nationality: 'USA'
+    },
+    {
+      name: 'David Rodriguez',
+      position: 'Midfielder',
+      teamId: '',
+      age: 28,
+      goals: 4,
+      assists: 6,
+      yellowCards: 2,
+      redCards: 0,
+      avatar: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=150',
+      value: 22000,
+      nationality: 'Spain'
+    },
+    // Green Eagles players
+    {
+      name: 'James Wilson',
+      position: 'Forward',
+      teamId: '',
+      age: 24,
+      goals: 7,
+      assists: 2,
+      yellowCards: 0,
+      redCards: 0,
+      avatar: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150',
+      value: 28000,
+      nationality: 'England'
+    },
+    {
+      name: 'Carlos Silva',
+      position: 'Defender',
+      teamId: '',
+      age: 30,
+      goals: 1,
+      assists: 4,
+      yellowCards: 3,
+      redCards: 0,
+      avatar: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150',
+      value: 18000,
+      nationality: 'Brazil'
+    }
+  ];
+
+  // Sample matches
+  const sampleMatches = [
+    {
+      homeTeam: '', // Will be set after teams are created
+      awayTeam: '',
+      homeScore: 2,
+      awayScore: 1,
+      date: '2024-01-15',
+      time: '15:00',
+      status: 'finished' as const,
+      venue: 'Leisure Park Main Field'
+    },
+    {
+      homeTeam: '',
+      awayTeam: '',
+      homeScore: 0,
+      awayScore: 0,
+      date: '2024-01-22',
+      time: '16:00',
+      status: 'scheduled' as const,
+      venue: 'Leisure Park Main Field'
+    }
+  ];
 
   // Add teams to batch
+  const teamRefs: any[] = [];
   sampleTeams.forEach((team, index) => {
     const teamRef = doc(collection(db, TEAMS_COLLECTION));
+    teamRefs.push(teamRef);
     batch.set(teamRef, {
       ...team,
+      createdAt: now,
+      updatedAt: now
+    });
+  });
+
+  // Add players to batch (assign to first few teams)
+  samplePlayers.forEach((player, index) => {
+    const playerRef = doc(collection(db, PLAYERS_COLLECTION));
+    const teamIndex = Math.floor(index / 2); // 2 players per team for first few teams
+    batch.set(playerRef, {
+      ...player,
+      teamId: teamRefs[teamIndex]?.id || teamRefs[0].id,
+      createdAt: now,
+      updatedAt: now
+    });
+  });
+
+  // Add sample matches
+  sampleMatches.forEach((match, index) => {
+    const matchRef = doc(collection(db, MATCHES_COLLECTION));
+    batch.set(matchRef, {
+      ...match,
+      homeTeam: teamRefs[index * 2]?.id || teamRefs[0].id,
+      awayTeam: teamRefs[index * 2 + 1]?.id || teamRefs[1].id,
       createdAt: now,
       updatedAt: now
     });

@@ -89,10 +89,15 @@ const Admin: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-2xl font-bold">Team Management</h3>
-        <button className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2">
-          <Plus className="h-4 w-4" />
-          <span>Add Team</span>
-        </button>
+        {hasPermission(PERMISSIONS.CREATE_TEAMS) && (
+          <button 
+            onClick={() => {/* TODO: Implement add team modal */}}
+            className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Add Team</span>
+          </button>
+        )}
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -113,14 +118,26 @@ const Admin: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex space-x-2">
-                <button className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
-                  <Edit className="h-4 w-4" />
-                </button>
-                <button className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
+              {(hasPermission(PERMISSIONS.EDIT_TEAMS) || hasPermission(PERMISSIONS.DELETE_TEAMS)) && (
+                <div className="flex space-x-2">
+                  {hasPermission(PERMISSIONS.EDIT_TEAMS) && (
+                    <button 
+                      onClick={() => {/* TODO: Implement edit team */}}
+                      className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </button>
+                  )}
+                  {hasPermission(PERMISSIONS.DELETE_TEAMS) && (
+                    <button 
+                      onClick={() => {/* TODO: Implement delete team */}}
+                      className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
             <div className="grid grid-cols-3 gap-2 text-center text-sm">
               <div>
@@ -146,10 +163,15 @@ const Admin: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-2xl font-bold">Match Management</h3>
-        <button className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2">
-          <Plus className="h-4 w-4" />
-          <span>Schedule Match</span>
-        </button>
+        {hasPermission(PERMISSIONS.CREATE_MATCHES) && (
+          <button 
+            onClick={() => {/* TODO: Implement schedule match modal */}}
+            className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Schedule Match</span>
+          </button>
+        )}
       </div>
       
       <div className="space-y-4">
@@ -226,12 +248,14 @@ const Admin: React.FC = () => {
                     </p>
                   </div>
                   
-                  <button
-                    onClick={() => setEditingMatch(editingMatch === match.id ? null : match.id)}
-                    className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </button>
+                  {hasPermission(PERMISSIONS.EDIT_MATCHES) && (
+                    <button
+                      onClick={() => setEditingMatch(editingMatch === match.id ? null : match.id)}
+                      className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
