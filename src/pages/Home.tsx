@@ -1,27 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, Users, Calendar, TrendingUp, Play, Star, ArrowRightLeft, Newspaper, LogIn, UserPlus, Clock, MapPin, Target } from 'lucide-react';
+import { Trophy, Users, Calendar, TrendingUp, Play, Star, LogIn, UserPlus, Clock, MapPin, Target, User, Settings, LogOut } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useData } from '../contexts/DataContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const Home: React.FC = () => {
   const { darkMode } = useTheme();
   const { teams, players, matches } = useData();
+  const { currentUser, userProfile, logout } = useAuth();
 
   const liveMatches = matches.filter(match => match.status === 'live');
   const upcomingMatches = matches.filter(match => match.status === 'scheduled').slice(0, 3);
   const topScorers = players.sort((a, b) => b.goals - a.goals).slice(0, 5);
   const topTeams = teams.sort((a, b) => b.points - a.points).slice(0, 4);
-  const recentTransfers = [
-    { playerName: 'Marcus Johnson', fromTeam: 'Thunder Bolts', toTeam: 'Green Eagles', value: 85000, date: '2024-01-20' },
-    { playerName: 'Carlos Rodriguez', fromTeam: 'Purple Panthers', toTeam: 'Fire Dragons', value: 88000, date: '2024-01-19' },
-    { playerName: 'James Wilson', fromTeam: 'Golden Lions', toTeam: 'Silver Sharks', value: 65000, date: '2024-01-18' }
-  ];
-  const latestNews = [
-    { title: 'Thunder Bolts Maintain Lead in LPTL', summary: 'Thunder Bolts continue their impressive form with a 2-1 victory over Green Eagles', date: '2024-01-21', category: 'Match Report' },
-    { title: 'New Transfer Window Opens', summary: 'Teams can now make player transfers for the remainder of the season', date: '2024-01-20', category: 'Transfer News' },
-    { title: 'Player of the Month: Marcus Johnson', summary: 'Thunder Bolts striker takes home the award after scoring 5 goals in January', date: '2024-01-19', category: 'Awards' }
-  ];
 
   return (
     <div className={`min-h-screen ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -63,13 +55,15 @@ const Home: React.FC = () => {
               >
                 Match Fixtures
               </Link>
-              <Link
-                to="/signin"
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
-              >
-                <LogIn className="h-5 w-5" />
-                <span>Sign In / Register</span>
-              </Link>
+              {!currentUser && (
+                <Link
+                  to="/signin"
+                  className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                >
+                  <LogIn className="h-5 w-5" />
+                  <span>Sign In / Register</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -118,41 +112,6 @@ const Home: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Latest News */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-3">
-            <Newspaper className="h-8 w-8 text-purple-500" />
-            <h2 className="text-3xl font-bold">Latest News</h2>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {latestNews.map((news, index) => (
-            <div key={index} className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105`}>
-              <div className="flex items-center justify-between mb-3">
-                <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
-                  news.category === 'Match Report' ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' :
-                  news.category === 'Transfer News' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400' :
-                  'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400'
-                }`}>
-                  {news.category}
-                </span>
-                <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {new Date(news.date).toLocaleDateString()}
-                </span>
-              </div>
-              <h3 className="font-bold text-lg mb-2">{news.title}</h3>
-              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
-                {news.summary}
-              </p>
-              <button className="text-purple-500 hover:text-purple-600 font-semibold text-sm transition-colors duration-200">
-                Read More →
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* Quick Stats */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -218,55 +177,6 @@ const Home: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Recent Transfers */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-3">
-            <ArrowRightLeft className="h-8 w-8 text-orange-500" />
-            <h2 className="text-3xl font-bold">Recent Transfers</h2>
-          </div>
-          <Link
-            to="/transfers"
-            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
-          >
-            Transfer Market
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recentTransfers.map((transfer, index) => (
-            <div key={index} className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300`}>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-2">
-                  <ArrowRightLeft className="h-5 w-5 text-purple-500" />
-                  <span className="text-sm font-semibold text-purple-500">TRANSFER</span>
-                </div>
-                <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {new Date(transfer.date).toLocaleDateString()}
-                </span>
-              </div>
-              <h3 className="font-bold text-lg mb-2">{transfer.playerName}</h3>
-              <div className="flex items-center justify-between mb-4">
-                <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {transfer.fromTeam}
-                </span>
-                <ArrowRightLeft className="h-4 w-4 text-purple-500" />
-                <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {transfer.toTeam}
-                </span>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold bg-gradient-to-r from-green-500 to-teal-500 bg-clip-text text-transparent">
-                  ${transfer.value.toLocaleString()}
-                </p>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Transfer Fee
-                </p>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
 
@@ -448,36 +358,137 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      {/* Sign In / Register Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl shadow-lg p-8 text-center`}>
-          <div className="flex justify-center mb-6">
-            <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-4 rounded-full">
-              <Users className="h-8 w-8 text-white" />
+      {/* User Dashboard Section for Authenticated Users */}
+      {currentUser && userProfile ? (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl shadow-lg p-8`}>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                  {userProfile.firstName.charAt(0)}{userProfile.lastName.charAt(0)}
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold">Welcome back, {userProfile.firstName}!</h2>
+                  <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    {userProfile.role === 'super_admin' ? 'Super Administrator' :
+                     userProfile.role === 'admin' ? 'Administrator' :
+                     userProfile.role === 'organizer' ? 'League Organizer' : 'League Member'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={logout}
+                className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Sign Out</span>
+              </button>
+            </div>
+            
+            {/* User Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div className={`${darkMode ? 'bg-slate-700' : 'bg-gray-50'} rounded-lg p-4 text-center`}>
+                <Trophy className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-yellow-500">
+                  {userProfile.favoriteTeamId ? 
+                    teams.find(t => t.id === userProfile.favoriteTeamId)?.points || 0 : 
+                    'N/A'
+                  }
+                </p>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Favorite Team Points
+                </p>
+              </div>
+              
+              <div className={`${darkMode ? 'bg-slate-700' : 'bg-gray-50'} rounded-lg p-4 text-center`}>
+                <Calendar className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-blue-500">
+                  {matches.filter(m => m.status === 'scheduled').length}
+                </p>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Upcoming Matches
+                </p>
+              </div>
+              
+              <div className={`${darkMode ? 'bg-slate-700' : 'bg-gray-50'} rounded-lg p-4 text-center`}>
+                <Users className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-green-500">
+                  {new Date(userProfile.createdAt).toLocaleDateString()}
+                </p>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Member Since
+                </p>
+              </div>
+            </div>
+            
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Link
+                to="/teams"
+                className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white p-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 text-center"
+              >
+                <Users className="h-6 w-6 mx-auto mb-2" />
+                <span>View Teams</span>
+              </Link>
+              
+              <Link
+                to="/players"
+                className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white p-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 text-center"
+              >
+                <Star className="h-6 w-6 mx-auto mb-2" />
+                <span>View Players</span>
+              </Link>
+              
+              <Link
+                to="/fixtures"
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white p-4 rounded-lg font-semibent transition-all duration-300 transform hover:scale-105 text-center"
+              >
+                <Calendar className="h-6 w-6 mx-auto mb-2" />
+                <span>Match Fixtures</span>
+              </Link>
+              
+              <Link
+                to="/standings"
+                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white p-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 text-center"
+              >
+                <Trophy className="h-6 w-6 mx-auto mb-2" />
+                <span>League Table</span>
+              </Link>
             </div>
           </div>
-          <h2 className="text-3xl font-bold mb-4">Join the LPTL Community</h2>
-          <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'} mb-8`}>
-            Get exclusive access to player stats, match predictions, and league updates
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/signin"
-              className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
-            >
-              <LogIn className="h-5 w-5" />
-              <span>Sign In</span>
-            </Link>
-            <Link
-              to="/register"
-              className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
-            >
-              <UserPlus className="h-5 w-5" />
-              <span>Register</span>
-            </Link>
+        </div>
+      ) : (
+        /* Sign In / Register Section for Non-Authenticated Users */
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl shadow-lg p-8 text-center`}>
+            <div className="flex justify-center mb-6">
+              <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-4 rounded-full">
+                <Users className="h-8 w-8 text-white" />
+              </div>
+            </div>
+            <h2 className="text-3xl font-bold mb-4">Join the LPTL Community</h2>
+            <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'} mb-8`}>
+              Get exclusive access to player stats, match predictions, and league updates
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                to="/signin"
+                className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+              >
+                <LogIn className="h-5 w-5" />
+                <span>Sign In</span>
+              </Link>
+              <Link
+                to="/register"
+                className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+              >
+                <UserPlus className="h-5 w-5" />
+                <span>Register</span>
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

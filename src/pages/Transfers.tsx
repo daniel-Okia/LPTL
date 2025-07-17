@@ -25,11 +25,8 @@ const Transfers: React.FC = () => {
     }
   };
 
-  const recentTransfers = [
-    { playerName: 'Marcus Johnson', fromTeam: 'Thunder Bolts', toTeam: 'Green Eagles', value: 85000, date: '2024-01-20' },
-    { playerName: 'Carlos Rodriguez', fromTeam: 'Purple Panthers', toTeam: 'Fire Dragons', value: 88000, date: '2024-01-19' },
-    { playerName: 'James Wilson', fromTeam: 'Golden Lions', toTeam: 'Silver Sharks', value: 65000, date: '2024-01-18' }
-  ];
+  const { transfers } = useData();
+  const recentTransfers = transfers.slice(0, 3);
 
   return (
     <div className={`min-h-screen ${darkMode ? 'text-white' : 'text-gray-900'} pt-8`}>
@@ -92,45 +89,47 @@ const Transfers: React.FC = () => {
         </div>
 
         {/* Recent Transfers */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-6">Recent Transfers</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recentTransfers.map((transfer, index) => (
-              <div key={index} className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300`}>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-2">
-                    <ArrowRightLeft className="h-5 w-5 text-purple-500" />
-                    <span className="text-sm font-semibold text-purple-500">TRANSFER</span>
+        {recentTransfers.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold mb-6">Recent Transfers</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recentTransfers.map((transfer) => (
+                <div key={transfer.id} className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-2">
+                      <ArrowRightLeft className="h-5 w-5 text-purple-500" />
+                      <span className="text-sm font-semibold text-purple-500">TRANSFER</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Clock className="h-4 w-4 text-gray-500" />
+                      <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {new Date(transfer.date).toLocaleDateString()}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <Clock className="h-4 w-4 text-gray-500" />
+                  <h3 className="font-bold text-lg mb-2">{transfer.playerName}</h3>
+                  <div className="flex items-center justify-between mb-4">
                     <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                      {new Date(transfer.date).toLocaleDateString()}
+                      {transfer.fromTeamName}
+                    </span>
+                    <ArrowRightLeft className="h-4 w-4 text-purple-500" />
+                    <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {transfer.toTeamName}
                     </span>
                   </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold bg-gradient-to-r from-green-500 to-teal-500 bg-clip-text text-transparent">
+                      ${transfer.value.toLocaleString()}
+                    </p>
+                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Transfer Fee
+                    </p>
+                  </div>
                 </div>
-                <h3 className="font-bold text-lg mb-2">{transfer.playerName}</h3>
-                <div className="flex items-center justify-between mb-4">
-                  <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    {transfer.fromTeam}
-                  </span>
-                  <ArrowRightLeft className="h-4 w-4 text-purple-500" />
-                  <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    {transfer.toTeam}
-                  </span>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold bg-gradient-to-r from-green-500 to-teal-500 bg-clip-text text-transparent">
-                    ${transfer.value.toLocaleString()}
-                  </p>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Transfer Fee
-                  </p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Transfer Interface */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
