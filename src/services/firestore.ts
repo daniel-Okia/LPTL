@@ -825,28 +825,10 @@ export const initializeSampleData = async (): Promise<void> => {
   });
 
   // Add players to batch (assign to first few teams)
-  samplePlayers.forEach((player, index) => {
-    const playerRef = doc(collection(db, PLAYERS_COLLECTION));
-    const teamIndex = index % realTeams.length; // Distribute players across all teams
-    batch.set(playerRef, {
-      ...player,
-      teamId: teamRefs[teamIndex]?.id || teamRefs[0].id,
-      createdAt: now,
-      updatedAt: now
-    });
-  });
+  // Players will be added by admin users through the interface
 
   // Add sample matches
-  sampleMatches.forEach((match, index) => {
-    const matchRef = doc(collection(db, MATCHES_COLLECTION));
-    batch.set(matchRef, {
-      ...match,
-      homeTeam: teamRefs[index * 2]?.id || teamRefs[0].id,
-      awayTeam: teamRefs[index * 2 + 1]?.id || teamRefs[1].id,
-      createdAt: now,
-      updatedAt: now
-    });
-  });
+  // Matches will be scheduled by admin users through the interface
 
   // Commit the batch
   await batch.commit();

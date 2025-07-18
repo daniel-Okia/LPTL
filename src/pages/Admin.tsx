@@ -206,17 +206,10 @@ const Admin: React.FC = () => {
       <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 shadow-lg`}>
         <h3 className="text-xl font-bold mb-4">Recent Activity</h3>
         <div className="space-y-3">
-          <div className="flex items-center space-x-3 p-3 rounded-lg bg-green-50 dark:bg-green-900/20">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span>Match between Thunder Bolts and Green Eagles completed</span>
-          </div>
-          <div className="flex items-center space-x-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20">
-            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            <span>New player Marcus Johnson registered</span>
-          </div>
-          <div className="flex items-center space-x-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20">
-            <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-            <span>League standings updated</span>
+          <div className="text-center py-8">
+            <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+              Recent activity will appear here
+            </p>
           </div>
         </div>
       </div>
@@ -767,7 +760,7 @@ const Admin: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Market Value (UGX)</label>
+                    <label className="block text-sm font-medium mb-2">Market Value ($)</label>
                     <input
                       type="number"
                       min="1000"
