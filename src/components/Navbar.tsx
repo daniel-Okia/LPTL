@@ -68,7 +68,7 @@ const Navbar: React.FC = () => {
                 LPTL
               </span>
               <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                12 Teams • Season 2024
+                Season 2025
               </span>
             </div>
           </div>
