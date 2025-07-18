@@ -61,7 +61,7 @@ const Navbar: React.FC = () => {
                 LPTL
               </span>
               <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Leisure Park Turf League
+                12 Teams • Season 2024
               </span>
             </div>
           </div>

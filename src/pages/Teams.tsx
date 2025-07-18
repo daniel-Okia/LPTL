@@ -54,12 +54,20 @@ const Teams: React.FC = () => {
                     background: `linear-gradient(135deg, ${team.primaryColor} 0%, ${team.secondaryColor} 100%)`
                   }}
                 >
-                  <div className="absolute top-0 right-0 opacity-20 text-6xl">
-                    {team.logo}
+                  <div className="absolute top-2 right-2 opacity-30">
+                    <img 
+                      src={team.logo} 
+                      alt={`${team.name} logo`}
+                      className="w-16 h-16 object-contain rounded-lg"
+                    />
                   </div>
                   <div className="relative z-10">
                     <div className="flex items-center space-x-3 mb-2">
-                      <span className="text-3xl">{team.logo}</span>
+                      <img 
+                        src={team.logo} 
+                        alt={`${team.name} logo`}
+                        className="w-12 h-12 object-contain rounded-lg border-2 border-white/20"
+                      />
                       <h2 className="text-xl font-bold">{team.name}</h2>
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-sm">

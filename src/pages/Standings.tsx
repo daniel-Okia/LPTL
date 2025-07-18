@@ -107,12 +107,11 @@ const Standings: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-4">
-                          <div 
-                            className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
-                            style={{ backgroundColor: team.primaryColor }}
-                          >
-                            {team.logo}
-                          </div>
+                          <img 
+                            src={team.logo} 
+                            alt={`${team.name} logo`}
+                            className="w-12 h-12 object-contain rounded-lg"
+                          />
                           <div>
                             <div className="font-bold text-lg">{team.name}</div>
                             <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>

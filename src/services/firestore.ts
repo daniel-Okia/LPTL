@@ -506,169 +506,275 @@ export const initializeSampleData = async (): Promise<void> => {
   const batch = writeBatch(db);
   const now = Timestamp.now();
 
-  // Sample teams
-  const sampleTeams = [
+  // Real teams from public/Teams folder
+  const realTeams = [
     {
-      name: 'Thunder Bolts',
-      logo: '⚡',
-      primaryColor: '#3B82F6',
-      secondaryColor: '#1E40AF',
-      played: 8,
-      won: 6,
-      drawn: 1,
+      name: 'BSS FC',
+      logo: '/Teams/BSS FC.jpg',
+      primaryColor: '#1E40AF',
+      secondaryColor: '#3B82F6',
+      played: 10,
+      won: 7,
+      drawn: 2,
       lost: 1,
-      goalsFor: 18,
+      goalsFor: 22,
       goalsAgainst: 8,
+      points: 23
+    },
+    {
+      name: 'Omit FC',
+      logo: '/Teams/Omit FC.jpg',
+      primaryColor: '#DC2626',
+      secondaryColor: '#EF4444',
+      played: 10,
+      won: 6,
+      drawn: 3,
+      lost: 1,
+      goalsFor: 19,
+      goalsAgainst: 10,
+      points: 21
+    },
+    {
+      name: 'Komafo FC',
+      logo: '/Teams/Komafo FC.jpg',
+      primaryColor: '#059669',
+      secondaryColor: '#10B981',
+      played: 10,
+      won: 6,
+      drawn: 2,
+      lost: 2,
+      goalsFor: 18,
+      goalsAgainst: 12,
+      points: 20
+    },
+    {
+      name: 'Friends FC',
+      logo: '/Teams/Friends FC.jpg',
+      primaryColor: '#7C3AED',
+      secondaryColor: '#8B5CF6',
+      played: 10,
+      won: 5,
+      drawn: 4,
+      lost: 1,
+      goalsFor: 17,
+      goalsAgainst: 11,
       points: 19
     },
     {
-      name: 'Green Eagles',
-      logo: '🦅',
-      primaryColor: '#10B981',
-      secondaryColor: '#047857',
-      played: 8,
+      name: 'Time Out FC',
+      logo: '/Teams/Time Out FC.jpg',
+      primaryColor: '#EA580C',
+      secondaryColor: '#F97316',
+      played: 10,
       won: 5,
-      drawn: 2,
-      lost: 1,
+      drawn: 3,
+      lost: 2,
       goalsFor: 16,
-      goalsAgainst: 9,
+      goalsAgainst: 13,
+      points: 18
+    },
+    {
+      name: 'Amigos United',
+      logo: '/Teams/Amigos United.jpg',
+      primaryColor: '#0891B2',
+      secondaryColor: '#0EA5E9',
+      played: 10,
+      won: 4,
+      drawn: 5,
+      lost: 1,
+      goalsFor: 15,
+      goalsAgainst: 12,
       points: 17
     },
     {
-      name: 'Purple Panthers',
-      logo: '🐆',
-      primaryColor: '#8B5CF6',
-      secondaryColor: '#6D28D9',
-      played: 8,
+      name: 'Olympiakos FC',
+      logo: '/Teams/Olympiakos FC.jpg',
+      primaryColor: '#BE123C',
+      secondaryColor: '#E11D48',
+      played: 10,
       won: 4,
-      drawn: 2,
+      drawn: 4,
       lost: 2,
       goalsFor: 14,
-      goalsAgainst: 11,
+      goalsAgainst: 13,
+      points: 16
+    },
+    {
+      name: 'Sports Fire FC',
+      logo: '/Teams/Sports Fire FC.jpg',
+      primaryColor: '#C2410C',
+      secondaryColor: '#EA580C',
+      played: 10,
+      won: 4,
+      drawn: 3,
+      lost: 3,
+      goalsFor: 13,
+      goalsAgainst: 14,
+      points: 15
+    },
+    {
+      name: 'Bweyos Katuba FC',
+      logo: '/Teams/Bweyos Katuba FC.jpg',
+      primaryColor: '#166534',
+      secondaryColor: '#16A34A',
+      played: 10,
+      won: 3,
+      drawn: 5,
+      lost: 2,
+      goalsFor: 12,
+      goalsAgainst: 13,
       points: 14
     },
     {
-      name: 'Fire Dragons',
-      logo: '🐉',
-      primaryColor: '#EF4444',
+      name: 'Sunday Special FC',
+      logo: '/Teams/Sunday Special FC.jpg',
+      primaryColor: '#7C2D12',
       secondaryColor: '#DC2626',
-      played: 8,
+      played: 10,
+      won: 3,
+      drawn: 4,
+      lost: 3,
+      goalsFor: 11,
+      goalsAgainst: 15,
+      points: 13
+    },
+    {
+      name: 'Maracana Select FC',
+      logo: '/Teams/Maracana Select FC.jpg',
+      primaryColor: '#1E3A8A',
+      secondaryColor: '#3B82F6',
+      played: 10,
       won: 3,
       drawn: 3,
-      lost: 2,
-      goalsFor: 12,
-      goalsAgainst: 10,
+      lost: 4,
+      goalsFor: 10,
+      goalsAgainst: 16,
       points: 12
     },
     {
-      name: 'Golden Lions',
-      logo: '🦁',
-      primaryColor: '#F59E0B',
-      secondaryColor: '#D97706',
-      played: 8,
-      won: 3,
-      drawn: 2,
-      lost: 3,
-      goalsFor: 11,
-      goalsAgainst: 13,
-      points: 11
-    },
-    {
-      name: 'Silver Sharks',
-      logo: '🦈',
-      primaryColor: '#6B7280',
-      secondaryColor: '#4B5563',
-      played: 8,
+      name: 'Korvema Soccer Academy',
+      logo: '/Teams/Korvema Soccer Academy.jpg',
+      primaryColor: '#581C87',
+      secondaryColor: '#7C3AED',
+      played: 10,
       won: 2,
-      drawn: 1,
-      lost: 5,
-      goalsFor: 8,
-      goalsAgainst: 16,
-      points: 7
-    },
-    {
-      name: 'Blue Wolves',
-      logo: '🐺',
-      primaryColor: '#0EA5E9',
-      secondaryColor: '#0284C7',
-      played: 8,
-      won: 1,
-      drawn: 3,
+      drawn: 4,
       lost: 4,
-      goalsFor: 7,
-      goalsAgainst: 15,
-      points: 6
-    },
-    {
-      name: 'Black Tigers',
-      logo: '🐅',
-      primaryColor: '#1F2937',
-      secondaryColor: '#111827',
-      played: 8,
-      won: 1,
-      drawn: 2,
-      lost: 5,
-      goalsFor: 6,
-      goalsAgainst: 18,
-      points: 5
+      goalsFor: 9,
+      goalsAgainst: 17,
+      points: 10
     }
   ];
 
-  // Sample players data
+  // Sample players data - distributed across the real teams
   const samplePlayers = [
-    // Thunder Bolts players
+    // BSS FC players
     {
-      name: 'Marcus Johnson',
+      name: 'Emmanuel Banda',
       position: 'Forward',
       teamId: '', // Will be set after teams are created
-      age: 25,
-      goals: 8,
+      age: 24,
+      goals: 12,
       assists: 3,
       yellowCards: 1,
       redCards: 0,
       avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150',
-      value: 25000,
-      nationality: 'USA'
+      value: 35000,
+      nationality: 'Zambia'
     },
     {
-      name: 'David Rodriguez',
+      name: 'Joseph Mwanza',
       position: 'Midfielder',
       teamId: '',
-      age: 28,
-      goals: 4,
-      assists: 6,
+      age: 26,
+      goals: 6,
+      assists: 8,
       yellowCards: 2,
       redCards: 0,
       avatar: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=150',
-      value: 22000,
-      nationality: 'Spain'
+      value: 28000,
+      nationality: 'Zambia'
     },
-    // Green Eagles players
+    // Omit FC players
     {
-      name: 'James Wilson',
+      name: 'Patrick Chanda',
       position: 'Forward',
       teamId: '',
-      age: 24,
-      goals: 7,
-      assists: 2,
+      age: 23,
+      goals: 10,
+      assists: 4,
       yellowCards: 0,
       redCards: 0,
       avatar: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150',
-      value: 28000,
-      nationality: 'England'
+      value: 32000,
+      nationality: 'Zambia'
     },
     {
-      name: 'Carlos Silva',
+      name: 'Moses Phiri',
       position: 'Defender',
       teamId: '',
-      age: 30,
-      goals: 1,
-      assists: 4,
+      age: 29,
+      goals: 2,
+      assists: 5,
       yellowCards: 3,
       redCards: 0,
       avatar: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150',
+      value: 22000,
+      nationality: 'Zambia'
+    },
+    // Komafo FC players
+    {
+      name: 'Kennedy Musonda',
+      position: 'Midfielder',
+      teamId: '',
+      age: 25,
+      goals: 8,
+      assists: 6,
+      yellowCards: 1,
+      redCards: 0,
+      avatar: 'https://images.pexels.com/photos/1300402/pexels-photo-1300402.jpeg?auto=compress&cs=tinysrgb&w=150',
+      value: 30000,
+      nationality: 'Zambia'
+    },
+    {
+      name: 'Francis Tembo',
+      position: 'Goalkeeper',
+      teamId: '',
+      age: 27,
+      goals: 0,
+      assists: 0,
+      yellowCards: 0,
+      redCards: 0,
+      avatar: 'https://images.pexels.com/photos/1884574/pexels-photo-1884574.jpeg?auto=compress&cs=tinysrgb&w=150',
+      value: 20000,
+      nationality: 'Zambia'
+    },
+    // Friends FC players
+    {
+      name: 'Given Lubinda',
+      position: 'Forward',
+      teamId: '',
+      age: 22,
+      goals: 9,
+      assists: 3,
+      yellowCards: 1,
+      redCards: 0,
+      avatar: 'https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg?auto=compress&cs=tinysrgb&w=150',
+      value: 26000,
+      nationality: 'Zambia'
+    },
+    {
+      name: 'Brian Sakala',
+      position: 'Defender',
+      teamId: '',
+      age: 28,
+      goals: 1,
+      assists: 2,
+      yellowCards: 4,
+      redCards: 1,
+      avatar: 'https://images.pexels.com/photos/1043473/pexels-photo-1043473.jpeg?auto=compress&cs=tinysrgb&w=150',
       value: 18000,
-      nationality: 'Brazil'
+      nationality: 'Zambia'
     }
   ];
 
@@ -698,7 +804,7 @@ export const initializeSampleData = async (): Promise<void> => {
 
   // Add teams to batch
   const teamRefs: any[] = [];
-  sampleTeams.forEach((team, index) => {
+  realTeams.forEach((team, index) => {
     const teamRef = doc(collection(db, TEAMS_COLLECTION));
     teamRefs.push(teamRef);
     batch.set(teamRef, {
@@ -711,7 +817,7 @@ export const initializeSampleData = async (): Promise<void> => {
   // Add players to batch (assign to first few teams)
   samplePlayers.forEach((player, index) => {
     const playerRef = doc(collection(db, PLAYERS_COLLECTION));
-    const teamIndex = Math.floor(index / 2); // 2 players per team for first few teams
+    const teamIndex = index % realTeams.length; // Distribute players across all teams
     batch.set(playerRef, {
       ...player,
       teamId: teamRefs[teamIndex]?.id || teamRefs[0].id,
