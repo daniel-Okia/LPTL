@@ -53,11 +53,7 @@ const Home: React.FC = () => {
             </div>
             
             <h1 className="text-5xl md:text-7xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-purple-400 via-blue-500 to-green-400 bg-clip-text text-transparent">
-                LPTL
-              </span>
-            </h1>
-            <p className="text-2xl md:text-3xl font-semibold mb-8 bg-gradient-to-r from-green-400 via-purple-500 to-blue-400 bg-clip-text text-transparent">
+            <p className="text-3xl md:text-4xl font-semibold mb-8 bg-gradient-to-r from-green-400 via-purple-500 to-blue-400 bg-clip-text text-transparent">
               Leisure Park Turf League
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

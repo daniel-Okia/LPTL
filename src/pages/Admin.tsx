@@ -3,6 +3,7 @@ import { Settings, Users, Calendar, Trophy, Plus, Edit, Trash2, Save, X } from '
 import { useTheme } from '../contexts/ThemeContext';
 import { useData } from '../contexts/DataContext';
 import { useAuth } from '../contexts/AuthContext';
+import { teamsService, playersService, matchesService } from '../services/firestore';
 import { PERMISSIONS } from '../utils/permissions';
 
 const Admin: React.FC = () => {
@@ -45,7 +46,7 @@ const Admin: React.FC = () => {
 
   const handleAddTeam = async () => {
     try {
-      await teamsService.add({
+      const teamId = await teamsService.add({
         ...teamForm,
         played: 0,
         won: 0,
@@ -57,14 +58,16 @@ const Admin: React.FC = () => {
       });
       setShowAddTeamModal(false);
       setTeamForm({ name: '', logo: '', primaryColor: '#1E40AF', secondaryColor: '#3B82F6' });
+      console.log('Team added successfully with ID:', teamId);
     } catch (error) {
       console.error('Error adding team:', error);
+      alert('Error adding team: ' + error.message);
     }
   };
 
   const handleAddPlayer = async () => {
     try {
-      await playersService.add({
+      const playerId = await playersService.add({
         ...playerForm,
         goals: 0,
         assists: 0,
@@ -81,14 +84,16 @@ const Admin: React.FC = () => {
         avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150',
         value: 20000
       });
+      console.log('Player added successfully with ID:', playerId);
     } catch (error) {
       console.error('Error adding player:', error);
+      alert('Error adding player: ' + error.message);
     }
   };
 
   const handleAddMatch = async () => {
     try {
-      await matchesService.add({
+      const matchId = await matchesService.add({
         ...matchForm,
         homeScore: 0,
         awayScore: 0,
@@ -102,8 +107,10 @@ const Admin: React.FC = () => {
         time: '15:00',
         venue: 'Leisure Park Main Field'
       });
+      console.log('Match added successfully with ID:', matchId);
     } catch (error) {
       console.error('Error adding match:', error);
+      alert('Error adding match: ' + error.message);
     }
   };
 
@@ -111,8 +118,10 @@ const Admin: React.FC = () => {
     if (window.confirm('Are you sure you want to delete this team?')) {
       try {
         await teamsService.delete(teamId);
+        console.log('Team deleted successfully');
       } catch (error) {
         console.error('Error deleting team:', error);
+        alert('Error deleting team: ' + error.message);
       }
     }
   };
@@ -121,8 +130,10 @@ const Admin: React.FC = () => {
     if (window.confirm('Are you sure you want to delete this player?')) {
       try {
         await playersService.delete(playerId);
+        console.log('Player deleted successfully');
       } catch (error) {
         console.error('Error deleting player:', error);
+        alert('Error deleting player: ' + error.message);
       }
     }
   };
@@ -131,8 +142,10 @@ const Admin: React.FC = () => {
     if (window.confirm('Are you sure you want to delete this match?')) {
       try {
         await matchesService.delete(matchId);
+        console.log('Match deleted successfully');
       } catch (error) {
         console.error('Error deleting match:', error);
+        alert('Error deleting match: ' + error.message);
       }
     }
   };
@@ -606,6 +619,7 @@ const Admin: React.FC = () => {
                     type="text"
                     value={teamForm.name}
                     onChange={(e) => setTeamForm(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Enter team name"
                     className={`w-full px-4 py-2 rounded-lg border ${
                       darkMode
                         ? 'bg-slate-700 border-slate-600 text-white'
@@ -619,7 +633,7 @@ const Admin: React.FC = () => {
                     type="text"
                     value={teamForm.logo}
                     onChange={(e) => setTeamForm(prev => ({ ...prev, logo: e.target.value }))}
-                    placeholder="⚽ or image URL"
+                    placeholder="Enter emoji (⚽) or image URL"
                     className={`w-full px-4 py-2 rounded-lg border ${
                       darkMode
                         ? 'bg-slate-700 border-slate-600 text-white'
@@ -678,6 +692,7 @@ const Admin: React.FC = () => {
                     type="text"
                     value={playerForm.name}
                     onChange={(e) => setPlayerForm(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Enter player name"
                     className={`w-full px-4 py-2 rounded-lg border ${
                       darkMode
                         ? 'bg-slate-700 border-slate-600 text-white'
@@ -743,6 +758,7 @@ const Admin: React.FC = () => {
                       type="text"
                       value={playerForm.nationality}
                       onChange={(e) => setPlayerForm(prev => ({ ...prev, nationality: e.target.value }))}
+                      placeholder="Enter nationality"
                       className={`w-full px-4 py-2 rounded-lg border ${
                         darkMode
                           ? 'bg-slate-700 border-slate-600 text-white'
@@ -755,8 +771,10 @@ const Admin: React.FC = () => {
                     <input
                       type="number"
                       min="1000"
+                      step="1000"
                       value={playerForm.value}
                       onChange={(e) => setPlayerForm(prev => ({ ...prev, value: parseInt(e.target.value) }))}
+                      placeholder="Enter market value"
                       className={`w-full px-4 py-2 rounded-lg border ${
                         darkMode
                           ? 'bg-slate-700 border-slate-600 text-white'
