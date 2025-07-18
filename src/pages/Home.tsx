@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, Users, Calendar, TrendingUp, Play, Star, LogIn, UserPlus, Clock, MapPin, Target, User, Settings, LogOut, Mail } from 'lucide-react';
+import { Trophy, Users, Calendar, TrendingUp, Play, Star, LogIn, UserPlus, Clock, MapPin, Target, User, Settings, LogOut, Mail, Shield } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useData } from '../contexts/DataContext';
 import { useAuth } from '../contexts/AuthContext';
+import { createTestAccounts } from '../utils/createTestAccounts';
 
 const Home: React.FC = () => {
   const { darkMode } = useTheme();
@@ -15,6 +16,15 @@ const Home: React.FC = () => {
   const topScorers = players.sort((a, b) => b.goals - a.goals).slice(0, 5);
   const topTeams = teams.sort((a, b) => b.points - a.points).slice(0, 4);
 
+  const handleCreateTestAccounts = async () => {
+    try {
+      const accounts = await createTestAccounts();
+      alert(`Test accounts created successfully!\n\nSuper Admin: ${accounts.superAdmin.email} / ${accounts.superAdmin.password}\nAdmin: ${accounts.admin.email} / ${accounts.admin.password}\nOrganizer: ${accounts.organizer.email} / ${accounts.organizer.password}`);
+    } catch (error) {
+      console.error('Error creating test accounts:', error);
+      alert('Test accounts already exist or error occurred. Check console for details.');
+    }
+  };
   return (
     <div className={`min-h-screen ${darkMode ? 'text-white' : 'text-gray-900'}`}>
       {/* Hero Section */}
@@ -63,6 +73,17 @@ const Home: React.FC = () => {
                   <LogIn className="h-5 w-5" />
                   <span>Sign In / Register</span>
                 </Link>
+              )}
+              
+              {/* Development Helper - Remove in production */}
+              {!currentUser && (
+                <button
+                  onClick={handleCreateTestAccounts}
+                  className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2 text-sm"
+                >
+                  <Shield className="h-4 w-4" />
+                  <span>Create Test Accounts</span>
+                </button>
               )}
             </div>
           </div>

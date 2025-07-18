@@ -22,6 +22,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, userData: Partial<User>) => Promise<void>;
   signUpWithInvitation: (email: string, password: string, userData: Partial<User>, invitationId: string) => Promise<void>;
+  createAdminAccount: (email: string, password: string, userData: Partial<User>) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
 }
@@ -70,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string, userData: Partial<User>) => {
     const { user } = await createUserWithEmailAndPassword(auth, email, password);
     
-    // Check if there's a pending invitation
+    // Check if there's a pending invitation, otherwise default to member
     const invitation = await invitationsService.getByEmail(email);
     const role = invitation ? invitation.role : ROLES.MEMBER;
     const permissions = getRolePermissions(role);
@@ -122,6 +123,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await invitationsService.updateStatus(invitation.id, 'accepted');
   };
 
+  const createAdminAccount = async (email: string, password: string, userData: Partial<User>) => {
+    const { user } = await createUserWithEmailAndPassword(auth, email, password);
+    
+    // Create admin user with full permissions
+    const permissions = getRolePermissions(ROLES.ADMIN);
+    
+    // Create user profile in Firestore
+    await usersService.createWithId(user.uid, {
+      email: user.email!,
+      firstName: userData.firstName || '',
+      lastName: userData.lastName || '',
+      phone: userData.phone,
+      favoriteTeamId: userData.favoriteTeamId,
+      role: ROLES.ADMIN,
+      permissions,
+      status: 'active'
+    });
+  };
+
   const logout = async () => {
     await signOut(auth);
   };
@@ -157,6 +177,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signIn,
     signUp,
     signUpWithInvitation,
+    createAdminAccount,
     logout,
     resetPassword
   };

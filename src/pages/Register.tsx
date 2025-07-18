@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, User, Phone, UserPlus, ArrowLeft, Flag } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, User, Phone, UserPlus, ArrowLeft, Flag, Shield } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
@@ -8,7 +8,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 
 const Register: React.FC = () => {
   const { darkMode } = useTheme();
-  const { signUp } = useAuth();
+  const { signUp, createAdminAccount } = useAuth();
   const { teams } = useData();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -19,7 +19,8 @@ const Register: React.FC = () => {
     password: '',
     confirmPassword: '',
     favoriteTeamId: '',
-    agreeToTerms: false
+    agreeToTerms: false,
+    createAsAdmin: false
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -52,12 +53,19 @@ const Register: React.FC = () => {
     }
 
     try {
-      await signUp(formData.email, formData.password, {
+      const userData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
         phone: formData.phone,
         favoriteTeamId: formData.favoriteTeamId || undefined
-      });
+      };
+
+      if (formData.createAsAdmin) {
+        await createAdminAccount(formData.email, formData.password, userData);
+      } else {
+        await signUp(formData.email, formData.password, userData);
+      }
+      
       navigate('/');
     } catch (err: any) {
       setError(err.message || 'Failed to create account. Please try again.');
@@ -280,6 +288,21 @@ const Register: React.FC = () => {
             </div>
 
             {/* Terms Agreement */}
+            <div className="flex items-start space-x-2">
+              <input
+                type="checkbox"
+                name="createAsAdmin"
+                checked={formData.createAsAdmin}
+                onChange={handleInputChange}
+                disabled={loading}
+                className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 focus:ring-2 mt-1 disabled:opacity-50"
+              />
+              <label className="text-sm flex items-center space-x-2">
+                <Shield className="h-4 w-4 text-red-500" />
+                <span>Create as Admin Account (for testing purposes)</span>
+              </label>
+            </div>
+
             <div className="flex items-start space-x-2">
               <input
                 type="checkbox"
