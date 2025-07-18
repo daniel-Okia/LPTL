@@ -886,8 +886,14 @@ const Admin: React.FC = () => {
               </div>
               <div className="flex space-x-3 mt-6">
                 <button
+                  type="button"
                   onClick={handleAddMatch}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white py-2 rounded-lg font-semibold transition-all duration-300"
+                  disabled={!matchForm.homeTeam || !matchForm.awayTeam || !matchForm.date || matchForm.homeTeam === matchForm.awayTeam}
+                  className={`flex-1 py-2 rounded-lg font-semibold transition-all duration-300 ${
+                    matchForm.homeTeam && matchForm.awayTeam && matchForm.date && matchForm.homeTeam !== matchForm.awayTeam
+                      ? 'bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white'
+                      : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                  }`}
                 >
                   Schedule Match
                 </button>
