@@ -76,18 +76,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const role = invitation ? invitation.role : ROLES.MEMBER;
     const permissions = getRolePermissions(role);
     
-    // Create user profile in Firestore
-    await usersService.createWithId(user.uid, {
+    // Filter out undefined values to prevent Firestore errors
+    const cleanUserData: any = {
       email: user.email!,
       firstName: userData.firstName || '',
       lastName: userData.lastName || '',
-      phone: userData.phone,
-      favoriteTeamId: userData.favoriteTeamId,
       role,
       permissions,
       status: 'active',
-      assignedBy: invitation?.invitedBy
-    });
+    };
+
+    // Only add optional fields if they have values
+    if (userData.phone) {
+      cleanUserData.phone = userData.phone;
+    }
+    if (userData.favoriteTeamId) {
+      cleanUserData.favoriteTeamId = userData.favoriteTeamId;
+    }
+    if (invitation?.invitedBy) {
+      cleanUserData.assignedBy = invitation.invitedBy;
+    }
+
+    // Create user profile in Firestore
+    await usersService.createWithId(user.uid, cleanUserData);
     
     // Mark invitation as accepted if it exists
     if (invitation) {
@@ -106,18 +117,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     const permissions = getRolePermissions(invitation.role);
     
-    // Create user profile in Firestore
-    await usersService.createWithId(user.uid, {
+    // Filter out undefined values to prevent Firestore errors
+    const cleanUserData: any = {
       email: user.email!,
       firstName: userData.firstName || '',
       lastName: userData.lastName || '',
-      phone: userData.phone,
-      favoriteTeamId: userData.favoriteTeamId,
       role: invitation.role,
       permissions,
       status: 'active',
       assignedBy: invitation.invitedBy
-    });
+    };
+
+    // Only add optional fields if they have values
+    if (userData.phone) {
+      cleanUserData.phone = userData.phone;
+    }
+    if (userData.favoriteTeamId) {
+      cleanUserData.favoriteTeamId = userData.favoriteTeamId;
+    }
+
+    // Create user profile in Firestore
+    await usersService.createWithId(user.uid, cleanUserData);
     
     // Mark invitation as accepted
     await invitationsService.updateStatus(invitation.id, 'accepted');
@@ -129,17 +149,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Create admin user with full permissions
     const permissions = getRolePermissions(ROLES.ADMIN);
     
-    // Create user profile in Firestore
-    await usersService.createWithId(user.uid, {
+    // Filter out undefined values to prevent Firestore errors
+    const cleanUserData: any = {
       email: user.email!,
       firstName: userData.firstName || '',
       lastName: userData.lastName || '',
-      phone: userData.phone,
-      favoriteTeamId: userData.favoriteTeamId,
       role: ROLES.ADMIN,
       permissions,
       status: 'active'
-    });
+    };
+
+    // Only add optional fields if they have values
+    if (userData.phone) {
+      cleanUserData.phone = userData.phone;
+    }
+    if (userData.favoriteTeamId) {
+      cleanUserData.favoriteTeamId = userData.favoriteTeamId;
+    }
+
+    // Create user profile in Firestore
+    await usersService.createWithId(user.uid, cleanUserData);
   };
 
   const logout = async () => {

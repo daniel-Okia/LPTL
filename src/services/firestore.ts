@@ -379,8 +379,18 @@ export const usersService = {
   async createWithId(id: string, user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> {
     const now = Timestamp.now();
     const docRef = doc(db, USERS_COLLECTION, id);
+    
+    // Filter out undefined values to prevent Firestore errors
+    const cleanUserData: any = {};
+    Object.keys(user).forEach(key => {
+      const value = (user as any)[key];
+      if (value !== undefined) {
+        cleanUserData[key] = value;
+      }
+    });
+    
     await setDoc(docRef, {
-      ...user,
+      ...cleanUserData,
       createdAt: now,
       updatedAt: now
     });

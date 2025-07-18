@@ -5,6 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useData } from '../contexts/DataContext';
 import { useAuth } from '../contexts/AuthContext';
 import { createTestAccounts } from '../utils/createTestAccounts';
+import { initializeSampleData } from '../services/firestore';
 
 const Home: React.FC = () => {
   const { darkMode } = useTheme();
@@ -23,6 +24,16 @@ const Home: React.FC = () => {
     } catch (error) {
       console.error('Error creating test accounts:', error);
       alert('Test accounts already exist or error occurred. Check console for details.');
+    }
+  };
+
+  const handleInitializeSampleData = async () => {
+    try {
+      await initializeSampleData();
+      alert('Sample data initialized successfully! The database has been populated with teams, players, and matches.');
+    } catch (error) {
+      console.error('Error initializing sample data:', error);
+      alert('Error initializing sample data. Check console for details.');
     }
   };
   return (
@@ -83,6 +94,17 @@ const Home: React.FC = () => {
                 >
                   <Shield className="h-4 w-4" />
                   <span>Create Test Accounts</span>
+                </button>
+              )}
+              
+              {/* Sample Data Helper - Remove in production */}
+              {!currentUser && (
+                <button
+                  onClick={handleInitializeSampleData}
+                  className="bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2 text-sm"
+                >
+                  <Trophy className="h-4 w-4" />
+                  <span>Initialize Sample Data</span>
                 </button>
               )}
             </div>

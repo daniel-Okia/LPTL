@@ -19,7 +19,6 @@ export const createTestAccounts = async () => {
       email: 'superadmin@lptl.com',
       firstName: 'Super',
       lastName: 'Admin',
-      phone: '+1234567890',
       role: ROLES.SUPER_ADMIN,
       permissions: getRolePermissions(ROLES.SUPER_ADMIN),
       status: 'active'
@@ -38,7 +37,6 @@ export const createTestAccounts = async () => {
       email: 'admin@lptl.com',
       firstName: 'League',
       lastName: 'Admin',
-      phone: '+1234567891',
       role: ROLES.ADMIN,
       permissions: getRolePermissions(ROLES.ADMIN),
       status: 'active'
@@ -57,7 +55,6 @@ export const createTestAccounts = async () => {
       email: 'organizer@lptl.com',
       firstName: 'League',
       lastName: 'Organizer',
-      phone: '+1234567892',
       role: ROLES.ORGANIZER,
       permissions: getRolePermissions(ROLES.ORGANIZER),
       status: 'active'
