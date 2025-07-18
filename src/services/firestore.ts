@@ -17,9 +17,6 @@ import {
 import { db } from '../config/firebase';
 import { Team, Player, Match, Transfer, User, UserInvitation } from '../types';
 
-// Import services for CRUD operations
-export { teamsService, playersService, matchesService, transfersService, usersService, invitationsService };
-
 // Collections
 const TEAMS_COLLECTION = 'teams';
 const PLAYERS_COLLECTION = 'players';
