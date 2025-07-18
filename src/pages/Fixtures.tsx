@@ -73,12 +73,11 @@ const Fixtures: React.FC = () => {
           {/* Teams */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3 flex-1">
-              <div 
-                className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-xl"
-                style={{ backgroundColor: homeTeam?.primaryColor }}
-              >
-                {homeTeam?.logo}
-              </div>
+              <img 
+                src={homeTeam?.logo} 
+                alt={`${homeTeam?.name} logo`}
+                className="w-12 h-12 object-contain rounded-lg"
+              />
               <div>
                 <h3 className="font-bold text-lg">{homeTeam?.name}</h3>
                 <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Home</p>
@@ -108,12 +107,11 @@ const Fixtures: React.FC = () => {
                 <h3 className="font-bold text-lg">{awayTeam?.name}</h3>
                 <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Away</p>
               </div>
-              <div 
-                className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-xl"
-                style={{ backgroundColor: awayTeam?.primaryColor }}
-              >
-                {awayTeam?.logo}
-              </div>
+              <img 
+                src={awayTeam?.logo} 
+                alt={`${awayTeam?.name} logo`}
+                className="w-12 h-12 object-contain rounded-lg"
+              />
             </div>
           </div>
 

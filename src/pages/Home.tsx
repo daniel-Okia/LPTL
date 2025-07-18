@@ -247,7 +247,11 @@ const Home: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{team.logo}</span>
+                        <img 
+                          src={team.logo} 
+                          alt={`${team.name} logo`}
+                          className="w-8 h-8 object-contain rounded"
+                        />
                         <span className="font-semibold">{team.name}</span>
                       </div>
                     </td>
@@ -356,7 +360,15 @@ const Home: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <span className="text-2xl">{homeTeam?.logo}</span>
+                    <img 
+                      src={homeTeam?.logo} 
+                      alt={`${homeTeam?.name} logo`}
+                      className="w-6 h-6 object-contain rounded"
+                    />
+                      src={homeTeam?.logo} 
+                      alt={`${homeTeam?.name} logo`}
+                      className="w-8 h-8 object-contain rounded"
+                    />
                     <span className="font-semibold">{homeTeam?.name}</span>
                   </div>
                   <div className="text-lg font-bold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
@@ -364,7 +376,15 @@ const Home: React.FC = () => {
                   </div>
                   <div className="flex items-center space-x-3">
                     <span className="font-semibold">{awayTeam?.name}</span>
-                    <span className="text-2xl">{awayTeam?.logo}</span>
+                    <img 
+                      src={awayTeam?.logo} 
+                      alt={`${awayTeam?.name} logo`}
+                      className="w-6 h-6 object-contain rounded"
+                    />
+                      src={awayTeam?.logo} 
+                      alt={`${awayTeam?.name} logo`}
+                      className="w-8 h-8 object-contain rounded"
+                    />
                   </div>
                 </div>
                 <div className="mt-4 flex items-center justify-center space-x-1">
