@@ -365,10 +365,6 @@ const Home: React.FC = () => {
                       alt={`${homeTeam?.name} logo`}
                       className="w-6 h-6 object-contain rounded"
                     />
-                      src={homeTeam?.logo} 
-                      alt={`${homeTeam?.name} logo`}
-                      className="w-8 h-8 object-contain rounded"
-                    />
                     <span className="font-semibold">{homeTeam?.name}</span>
                   </div>
                   <div className="text-lg font-bold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
@@ -380,10 +376,6 @@ const Home: React.FC = () => {
                       src={awayTeam?.logo} 
                       alt={`${awayTeam?.name} logo`}
                       className="w-6 h-6 object-contain rounded"
-                    />
-                      src={awayTeam?.logo} 
-                      alt={`${awayTeam?.name} logo`}
-                      className="w-8 h-8 object-contain rounded"
                     />
                   </div>
                 </div>
