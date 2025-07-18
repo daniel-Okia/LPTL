@@ -36,6 +36,7 @@ const Home: React.FC = () => {
       alert('Error initializing sample data. Check console for details.');
     }
   };
+  
   return (
     <div className={`min-h-screen ${darkMode ? 'text-white' : 'text-gray-900'}`}>
       {/* Hero Section */}
@@ -53,6 +54,7 @@ const Home: React.FC = () => {
             </div>
             
             <h1 className="text-5xl md:text-7xl font-bold mb-6">
+            </h1>
             <p className="text-3xl md:text-4xl font-semibold mb-8 bg-gradient-to-r from-green-400 via-purple-500 to-blue-400 bg-clip-text text-transparent">
               Leisure Park Turf League
             </p>
@@ -208,7 +210,7 @@ const Home: React.FC = () => {
                   {teams.reduce((sum, team) => sum + team.goalsFor, 0)}
                 </p>
               </div>
-              <div className="bg-gradient-to-r from-pink-500 to-purple-500 p-3 rounded-lg">
+              <div className="bg-gradient-to-r from-pink-500 to-purple-500 -3 rounded-lg">
                 <Trophy className="h-6 w-6 text-white" />
               </div>
             </div>
@@ -489,7 +491,7 @@ const Home: React.FC = () => {
               
               <Link
                 to="/fixtures"
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white p-4 rounded-lg font-semibent transition-all duration-300 transform hover:scale-105 text-center"
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white p-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 text-center"
               >
                 <Calendar className="h-6 w-6 mx-auto mb-2" />
                 <span>Match Fixtures</span>
