@@ -767,7 +767,7 @@ const Admin: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Market Value ($)</label>
+                    <label className="block text-sm font-medium mb-2">Market Value (UGX)</label>
                     <input
                       type="number"
                       min="1000"

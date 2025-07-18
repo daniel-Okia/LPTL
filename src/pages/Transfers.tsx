@@ -240,7 +240,7 @@ const Transfers: React.FC = () => {
                               {player?.position} • Currently at {currentTeam?.name}
                             </p>
                             <p className="text-lg font-bold text-green-500">
-                              ${player?.value.toLocaleString()}
+                              UGX {player?.value.toLocaleString()}
                             </p>
                           </div>
                         </div>

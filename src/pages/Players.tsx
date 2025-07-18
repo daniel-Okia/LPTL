@@ -214,7 +214,7 @@ const Players: React.FC = () => {
                       Market Value
                     </p>
                     <p className="text-lg font-bold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
-                      ${player.value.toLocaleString()}
+                      UGX {player.value.toLocaleString()}
                     </p>
                   </div>
                 </div>

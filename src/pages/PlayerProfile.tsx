@@ -185,11 +185,11 @@ const PlayerProfile: React.FC = () => {
                 <h3 className="text-xl font-bold">Market Value</h3>
               </div>
               <p className="text-3xl font-bold bg-gradient-to-r from-green-500 to-teal-500 bg-clip-text text-transparent">
-                ${player.value.toLocaleString()}
+                UGX {player.value.toLocaleString()}
               </p>
               <div className="flex items-center space-x-2 mt-2">
                 <TrendingUp className="h-4 w-4 text-green-500" />
-                <span className="text-sm text-green-500">+5.2% this month</span>
+                <span className="text-sm text-green-500">Market Value</span>
               </div>
             </div>
 
