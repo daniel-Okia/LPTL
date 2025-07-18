@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Users, Calendar, Trophy, Plus, Edit, Trash2, Save } from 'lucide-react';
+import { Settings, Users, Calendar, Trophy, Plus, Edit, Trash2, Save, X } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useData } from '../contexts/DataContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,6 +11,131 @@ const Admin: React.FC = () => {
   const { teams, players, matches, updateMatch } = useData();
   const [activeTab, setActiveTab] = useState('overview');
   const [editingMatch, setEditingMatch] = useState<string | null>(null);
+  const [showAddTeamModal, setShowAddTeamModal] = useState(false);
+  const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
+  const [showAddMatchModal, setShowAddMatchModal] = useState(false);
+  const [editingTeam, setEditingTeam] = useState<string | null>(null);
+  const [editingPlayer, setEditingPlayer] = useState<string | null>(null);
+
+  // Form states
+  const [teamForm, setTeamForm] = useState({
+    name: '',
+    logo: '',
+    primaryColor: '#1E40AF',
+    secondaryColor: '#3B82F6'
+  });
+
+  const [playerForm, setPlayerForm] = useState({
+    name: '',
+    position: 'Forward',
+    teamId: '',
+    age: 25,
+    nationality: 'Zambia',
+    avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150',
+    value: 20000
+  });
+
+  const [matchForm, setMatchForm] = useState({
+    homeTeam: '',
+    awayTeam: '',
+    date: '',
+    time: '15:00',
+    venue: 'Leisure Park Main Field'
+  });
+
+  const handleAddTeam = async () => {
+    try {
+      await teamsService.add({
+        ...teamForm,
+        played: 0,
+        won: 0,
+        drawn: 0,
+        lost: 0,
+        goalsFor: 0,
+        goalsAgainst: 0,
+        points: 0
+      });
+      setShowAddTeamModal(false);
+      setTeamForm({ name: '', logo: '', primaryColor: '#1E40AF', secondaryColor: '#3B82F6' });
+    } catch (error) {
+      console.error('Error adding team:', error);
+    }
+  };
+
+  const handleAddPlayer = async () => {
+    try {
+      await playersService.add({
+        ...playerForm,
+        goals: 0,
+        assists: 0,
+        yellowCards: 0,
+        redCards: 0
+      });
+      setShowAddPlayerModal(false);
+      setPlayerForm({
+        name: '',
+        position: 'Forward',
+        teamId: '',
+        age: 25,
+        nationality: 'Zambia',
+        avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150',
+        value: 20000
+      });
+    } catch (error) {
+      console.error('Error adding player:', error);
+    }
+  };
+
+  const handleAddMatch = async () => {
+    try {
+      await matchesService.add({
+        ...matchForm,
+        homeScore: 0,
+        awayScore: 0,
+        status: 'scheduled'
+      });
+      setShowAddMatchModal(false);
+      setMatchForm({
+        homeTeam: '',
+        awayTeam: '',
+        date: '',
+        time: '15:00',
+        venue: 'Leisure Park Main Field'
+      });
+    } catch (error) {
+      console.error('Error adding match:', error);
+    }
+  };
+
+  const handleDeleteTeam = async (teamId: string) => {
+    if (window.confirm('Are you sure you want to delete this team?')) {
+      try {
+        await teamsService.delete(teamId);
+      } catch (error) {
+        console.error('Error deleting team:', error);
+      }
+    }
+  };
+
+  const handleDeletePlayer = async (playerId: string) => {
+    if (window.confirm('Are you sure you want to delete this player?')) {
+      try {
+        await playersService.delete(playerId);
+      } catch (error) {
+        console.error('Error deleting player:', error);
+      }
+    }
+  };
+
+  const handleDeleteMatch = async (matchId: string) => {
+    if (window.confirm('Are you sure you want to delete this match?')) {
+      try {
+        await matchesService.delete(matchId);
+      } catch (error) {
+        console.error('Error deleting match:', error);
+      }
+    }
+  };
 
   const tabs = [
     { id: 'overview', name: 'Overview', icon: Trophy },
@@ -91,7 +216,7 @@ const Admin: React.FC = () => {
         <h3 className="text-2xl font-bold">Team Management</h3>
         {hasPermission(PERMISSIONS.CREATE_TEAMS) && (
           <button 
-            onClick={() => {/* TODO: Implement add team modal */}}
+            onClick={() => setShowAddTeamModal(true)}
             className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
           >
             <Plus className="h-4 w-4" />
@@ -122,7 +247,7 @@ const Admin: React.FC = () => {
                 <div className="flex space-x-2">
                   {hasPermission(PERMISSIONS.EDIT_TEAMS) && (
                     <button 
-                      onClick={() => {/* TODO: Implement edit team */}}
+                      onClick={() => setEditingTeam(team.id)}
                       className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                     >
                       <Edit className="h-4 w-4" />
@@ -130,7 +255,7 @@ const Admin: React.FC = () => {
                   )}
                   {hasPermission(PERMISSIONS.DELETE_TEAMS) && (
                     <button 
-                      onClick={() => {/* TODO: Implement delete team */}}
+                      onClick={() => handleDeleteTeam(team.id)}
                       className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -165,7 +290,7 @@ const Admin: React.FC = () => {
         <h3 className="text-2xl font-bold">Match Management</h3>
         {hasPermission(PERMISSIONS.CREATE_MATCHES) && (
           <button 
-            onClick={() => {/* TODO: Implement schedule match modal */}}
+            onClick={() => setShowAddMatchModal(true)}
             className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
           >
             <Plus className="h-4 w-4" />
@@ -254,6 +379,15 @@ const Admin: React.FC = () => {
                       className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                     >
                       <Edit className="h-4 w-4" />
+                    </button>
+                  )}
+                  
+                  {hasPermission(PERMISSIONS.DELETE_MATCHES) && (
+                    <button
+                      onClick={() => handleDeleteMatch(match.id)}
+                      className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   )}
                 </div>
@@ -384,10 +518,371 @@ const Admin: React.FC = () => {
           })}
         </div>
 
+
+      {/* Add Player Section */}
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-2xl font-bold">Player Management</h3>
+          {hasPermission(PERMISSIONS.CREATE_PLAYERS) && (
+            <button 
+              onClick={() => setShowAddPlayerModal(true)}
+              className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add Player</span>
+            </button>
+          )}
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {players.slice(0, 12).map((player) => {
+            const team = teams.find(t => t.id === player.teamId);
+            return (
+              <div key={player.id} className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 shadow-lg`}>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <img
+                      src={player.avatar}
+                      alt={player.name}
+                      className="w-12 h-12 rounded-full"
+                    />
+                    <div>
+                      <h4 className="font-bold">{player.name}</h4>
+                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {player.position} • {team?.name}
+                      </p>
+                    </div>
+                  </div>
+                  {(hasPermission(PERMISSIONS.EDIT_PLAYERS) || hasPermission(PERMISSIONS.DELETE_PLAYERS)) && (
+                    <div className="flex space-x-2">
+                      {hasPermission(PERMISSIONS.EDIT_PLAYERS) && (
+                        <button 
+                          onClick={() => setEditingPlayer(player.id)}
+                          className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                      )}
+                      {hasPermission(PERMISSIONS.DELETE_PLAYERS) && (
+                        <button 
+                          onClick={() => handleDeletePlayer(player.id)}
+                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 gap-4 text-center text-sm">
+                  <div>
+                    <p className="font-semibold text-yellow-500">{player.goals}</p>
+                    <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Goals</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-blue-500">{player.assists}</p>
+                    <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Assists</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
         {/* Tab Content */}
         <div className="mb-8">
           {renderTabContent()}
         </div>
+
+        {/* Add Team Modal */}
+        {showAddTeamModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 w-full max-w-md mx-4`}>
+              <h3 className="text-xl font-bold mb-4">Add New Team</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Team Name</label>
+                  <input
+                    type="text"
+                    value={teamForm.name}
+                    onChange={(e) => setTeamForm(prev => ({ ...prev, name: e.target.value }))}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      darkMode
+                        ? 'bg-slate-700 border-slate-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Logo (Emoji or URL)</label>
+                  <input
+                    type="text"
+                    value={teamForm.logo}
+                    onChange={(e) => setTeamForm(prev => ({ ...prev, logo: e.target.value }))}
+                    placeholder="⚽ or image URL"
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      darkMode
+                        ? 'bg-slate-700 border-slate-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Primary Color</label>
+                    <input
+                      type="color"
+                      value={teamForm.primaryColor}
+                      onChange={(e) => setTeamForm(prev => ({ ...prev, primaryColor: e.target.value }))}
+                      className="w-full h-10 rounded-lg border"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Secondary Color</label>
+                    <input
+                      type="color"
+                      value={teamForm.secondaryColor}
+                      onChange={(e) => setTeamForm(prev => ({ ...prev, secondaryColor: e.target.value }))}
+                      className="w-full h-10 rounded-lg border"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="flex space-x-3 mt-6">
+                <button
+                  onClick={handleAddTeam}
+                  className="flex-1 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white py-2 rounded-lg font-semibold transition-all duration-300"
+                >
+                  Add Team
+                </button>
+                <button
+                  onClick={() => setShowAddTeamModal(false)}
+                  className={`flex-1 ${darkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'} py-2 rounded-lg font-semibold transition-all duration-300`}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add Player Modal */}
+        {showAddPlayerModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 w-full max-w-md mx-4`}>
+              <h3 className="text-xl font-bold mb-4">Add New Player</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Player Name</label>
+                  <input
+                    type="text"
+                    value={playerForm.name}
+                    onChange={(e) => setPlayerForm(prev => ({ ...prev, name: e.target.value }))}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      darkMode
+                        ? 'bg-slate-700 border-slate-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Position</label>
+                    <select
+                      value={playerForm.position}
+                      onChange={(e) => setPlayerForm(prev => ({ ...prev, position: e.target.value }))}
+                      className={`w-full px-4 py-2 rounded-lg border ${
+                        darkMode
+                          ? 'bg-slate-700 border-slate-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                    >
+                      <option value="Forward">Forward</option>
+                      <option value="Midfielder">Midfielder</option>
+                      <option value="Defender">Defender</option>
+                      <option value="Goalkeeper">Goalkeeper</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Age</label>
+                    <input
+                      type="number"
+                      min="16"
+                      max="45"
+                      value={playerForm.age}
+                      onChange={(e) => setPlayerForm(prev => ({ ...prev, age: parseInt(e.target.value) }))}
+                      className={`w-full px-4 py-2 rounded-lg border ${
+                        darkMode
+                          ? 'bg-slate-700 border-slate-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Team</label>
+                  <select
+                    value={playerForm.teamId}
+                    onChange={(e) => setPlayerForm(prev => ({ ...prev, teamId: e.target.value }))}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      darkMode
+                        ? 'bg-slate-700 border-slate-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                  >
+                    <option value="">Select Team</option>
+                    {teams.map(team => (
+                      <option key={team.id} value={team.id}>{team.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Nationality</label>
+                    <input
+                      type="text"
+                      value={playerForm.nationality}
+                      onChange={(e) => setPlayerForm(prev => ({ ...prev, nationality: e.target.value }))}
+                      className={`w-full px-4 py-2 rounded-lg border ${
+                        darkMode
+                          ? 'bg-slate-700 border-slate-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Market Value ($)</label>
+                    <input
+                      type="number"
+                      min="1000"
+                      value={playerForm.value}
+                      onChange={(e) => setPlayerForm(prev => ({ ...prev, value: parseInt(e.target.value) }))}
+                      className={`w-full px-4 py-2 rounded-lg border ${
+                        darkMode
+                          ? 'bg-slate-700 border-slate-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="flex space-x-3 mt-6">
+                <button
+                  onClick={handleAddPlayer}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white py-2 rounded-lg font-semibold transition-all duration-300"
+                >
+                  Add Player
+                </button>
+                <button
+                  onClick={() => setShowAddPlayerModal(false)}
+                  className={`flex-1 ${darkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'} py-2 rounded-lg font-semibold transition-all duration-300`}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add Match Modal */}
+        {showAddMatchModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 w-full max-w-md mx-4`}>
+              <h3 className="text-xl font-bold mb-4">Schedule New Match</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Home Team</label>
+                  <select
+                    value={matchForm.homeTeam}
+                    onChange={(e) => setMatchForm(prev => ({ ...prev, homeTeam: e.target.value }))}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      darkMode
+                        ? 'bg-slate-700 border-slate-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                  >
+                    <option value="">Select Home Team</option>
+                    {teams.map(team => (
+                      <option key={team.id} value={team.id}>{team.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Away Team</label>
+                  <select
+                    value={matchForm.awayTeam}
+                    onChange={(e) => setMatchForm(prev => ({ ...prev, awayTeam: e.target.value }))}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      darkMode
+                        ? 'bg-slate-700 border-slate-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                  >
+                    <option value="">Select Away Team</option>
+                    {teams.filter(team => team.id !== matchForm.homeTeam).map(team => (
+                      <option key={team.id} value={team.id}>{team.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Date</label>
+                    <input
+                      type="date"
+                      value={matchForm.date}
+                      onChange={(e) => setMatchForm(prev => ({ ...prev, date: e.target.value }))}
+                      className={`w-full px-4 py-2 rounded-lg border ${
+                        darkMode
+                          ? 'bg-slate-700 border-slate-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Time</label>
+                    <input
+                      type="time"
+                      value={matchForm.time}
+                      onChange={(e) => setMatchForm(prev => ({ ...prev, time: e.target.value }))}
+                      className={`w-full px-4 py-2 rounded-lg border ${
+                        darkMode
+                          ? 'bg-slate-700 border-slate-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Venue</label>
+                  <input
+                    type="text"
+                    value={matchForm.venue}
+                    onChange={(e) => setMatchForm(prev => ({ ...prev, venue: e.target.value }))}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      darkMode
+                        ? 'bg-slate-700 border-slate-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                  />
+                </div>
+              </div>
+              <div className="flex space-x-3 mt-6">
+                <button
+                  onClick={handleAddMatch}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white py-2 rounded-lg font-semibold transition-all duration-300"
+                >
+                  Schedule Match
+                </button>
+                <button
+                  onClick={() => setShowAddMatchModal(false)}
+                  className={`flex-1 ${darkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'} py-2 rounded-lg font-semibold transition-all duration-300`}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
