@@ -57,11 +57,8 @@ const Home: React.FC = () => {
                 LPTL
               </span>
             </h1>
-            <p className="text-2xl md:text-3xl font-semibold mb-4 bg-gradient-to-r from-green-400 via-purple-500 to-blue-400 bg-clip-text text-transparent">
+            <p className="text-2xl md:text-3xl font-semibold mb-8 bg-gradient-to-r from-green-400 via-purple-500 to-blue-400 bg-clip-text text-transparent">
               Leisure Park Turf League
-            </p>
-            <p className={`text-xl md:text-2xl mb-8 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              The Premier Football Experience in Your Neighborhood
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
